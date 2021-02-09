@@ -22,10 +22,9 @@ namespace TestApiDemo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<IDataService, InventoryService>();
+            services.AddTransient<IDataService, InventoryDataService>();
             services.AddRouting(options => options.LowercaseUrls = true);
 
-            //services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -41,6 +40,8 @@ namespace TestApiDemo
                     }
                 });
             });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,10 +55,8 @@ namespace TestApiDemo
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("./swagger/v1/swagger.json", "Test API Demo");
-                c.RoutePrefix = string.Empty;
+                c.RoutePrefix = string.Empty;   //Default to the swagger page 
             });
-
-
 
             if (env.IsDevelopment())
             {

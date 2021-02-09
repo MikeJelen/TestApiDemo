@@ -1,6 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using TestApiDemo.Enumerations;
 using TestApiDemo.Models;
 using TestApiDemo.Services;
 
@@ -16,39 +17,59 @@ namespace TestApiDemo.Controllers
             _dataService = dataService;
         }
 
-        // GET: api/Inventory
+        #region Get Functions
+
+        // GET: inventory
         [HttpGet]
         public IEnumerable<Inventory> Get()
         {
             return _dataService.Get();
         }
 
-        // GET: api/Inventory/Apples
+        // GET: inventory/Apples
         [HttpGet("{name}", Name = "Name")]
         public Inventory Get(string name)
         {
             return _dataService.GetByName(name);
         }
 
-        // POST: api/Inventory
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET: inventory/created/Oldest
+        [HttpGet]
+        [Route("created/{filter}", Name = "GetByCreated")]
+        public IEnumerable<Inventory> GetByCreated(CreatedFilter filter)
         {
-            throw new NotImplementedException();
+            return _dataService.GetByCreated(filter);
         }
 
-        // PUT: api/Inventory/Apples
-        [HttpPut("{name}")]
-        public void Put(string name, [FromBody] string value)
+        // GET: inventory/quantity/Highest
+        [HttpGet]
+        [Route("quantity/{filter}", Name = "GetByQuantityLevel")]
+        public IEnumerable<Inventory> GetByQuantityLevel(QuantityFilter filter)
         {
-            throw new NotImplementedException();
+            return _dataService.GetByQuantityLevel(filter);
+        }
+        
+        #endregion
+
+        // POST: inventory
+        [HttpPost]
+        public void Post([FromBody] IEnumerable<Inventory> value)
+        {
+            _dataService.Post(value);
+        }
+
+        // PUT: inventory/Apples
+        [HttpPut("{name}")]
+        public void Put(string name, [FromBody] Inventory value)
+        {
+            _dataService.Put(name, value);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{name}")]
         public void Delete(string name)
         {
-            throw new NotImplementedException();
+            _dataService.Delete(name);
         }
     }
 }
