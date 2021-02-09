@@ -3,9 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApiDemo", "TestApiDemo\TestApiDemo.csproj", "{77DE88B0-99A4-4A4F-8680-72217EB0FFA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApiDemo", "TestApiDemo\TestApiDemo.csproj", "{77DE88B0-99A4-4A4F-8680-72217EB0FFA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{1E17E27A-2C3D-4187-8400-B7D75A0A8D32}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
