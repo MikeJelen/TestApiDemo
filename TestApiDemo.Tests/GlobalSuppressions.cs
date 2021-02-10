@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "<Pending>", Scope = "member", Target = "~M:TestApiDemo.Tests.Tests.ExecuteQuery(System.String)~System.Data.DataSet")]
+[assembly: SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "<Pending>", Scope = "member", Target = "~M:TestApiDemo.Tests.TestBase`1.ExecuteQuery(System.String)~System.Data.DataSet")]
