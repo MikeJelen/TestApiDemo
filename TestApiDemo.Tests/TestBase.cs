@@ -1,21 +1,55 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using TestApiDemo.Controllers;
+using TestApiDemo.Services;
 
 namespace TestApiDemo.Tests
 {
     public abstract class TestBase<T>
     {
+        protected const bool PRESERVE_TEST_PRODUCTS = false;
         protected const string URL = "http://localhost:8081/inventory";
         protected const string CONN = "Server=(localdb)\\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;";
 
         protected readonly string CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        protected readonly InventoryController InventoryController = new InventoryController(new InventoryDataService());
+        protected readonly List<string> AddedProducts = new List<string>();
 
+        #region Setup and Breakdown
+
+        [OneTimeSetUp]
+        public void Initialize()
+        {
+        }
+
+        [OneTimeTearDown]
+        public void Cleanup()
+        {
+            DeleteProductForTest();
+        }
+
+        #endregion 
+        
         #region Protected Methods
 
-        protected string InsertProductForDelete()
+        protected void DeleteProductForTest()
+        {
+            if (!PRESERVE_TEST_PRODUCTS)
+            {
+                var deleteSql = File.ReadAllText(Path.Combine(CurrentDirectory, "SQL", "DeleteProduct.sql"));
+                foreach (var productName in AddedProducts)
+                {
+                    _ = ExecuteQuery(deleteSql.Replace("<@Name>", productName));
+                }
+            }
+        }
+
+        protected string InsertProductForTest()
         {
             var newProduct = (Guid.NewGuid().ToString()).Replace("-", "");
 
@@ -26,7 +60,13 @@ namespace TestApiDemo.Tests
             var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
 
             var newProductVerifiedResult = ExecuteQuery(selectSqlString).Tables[0];
-            return (newProductVerifiedResult.Rows.Count == 1) ? newProduct : null;
+            if (newProductVerifiedResult.Rows.Count != 1)
+            {
+                return null;
+            }
+
+            AddedProducts.Add(newProduct);
+            return newProduct;
         }
 
         protected static DataSet ExecuteQuery(string query)

@@ -119,6 +119,7 @@ namespace TestApiDemo.Services
         {
             try
             {
+                var start = DateTime.Now;
                 var context = new InventoryContext();
                 var response = new DemoResponse() { IsSuccessful = true };
 
@@ -138,7 +139,7 @@ namespace TestApiDemo.Services
                 context.SaveChanges();
 
                 response.Message = $"Delete for product {name} successfully completed";
-                Log.Info(response.Message);
+                WriteProgressLogMessage(start, response.Message);
 
                 return response;
             }
@@ -162,6 +163,7 @@ namespace TestApiDemo.Services
             
             try
             {
+                var start = DateTime.Now;
                 var context = new InventoryContext();
                 var response = new DemoResponse() { IsSuccessful = true };
                 var isUpdate = false;
@@ -182,7 +184,7 @@ namespace TestApiDemo.Services
                 messageBuilder.Append($"Put for product {name} successfully completed (")
                     .Append(isUpdate ? "update" : "insert").Append(")");
                 response.Message = messageBuilder.ToString();
-                Log.Info(response.Message);
+                WriteProgressLogMessage(start, response.Message);
 
                 return response;
             }
@@ -192,11 +194,12 @@ namespace TestApiDemo.Services
                 throw;
             }
         }
-
+        
         public DemoResponse Post(IEnumerable<Inventory> inventory)
         {
             try
             {
+                var start = DateTime.Now;
                 var response = new DemoResponse() { IsSuccessful = true };
 
                 var processedItems = new Dictionary<string, bool>();
@@ -225,7 +228,7 @@ namespace TestApiDemo.Services
                 }
 
                 response.Message = messageBuilder.ToString();
-                Log.Info(response.Message);
+                WriteProgressLogMessage(start, response.Message);
 
                 return response;
             }
@@ -236,8 +239,7 @@ namespace TestApiDemo.Services
             }
         }
 
-
-        #region Helper Functions for CRUD Operations 
+        #region Helper Functions
 
         private static bool GetProductFromName(InventoryContext context, string name, out Product product)
         {
@@ -371,6 +373,15 @@ namespace TestApiDemo.Services
 
             
             context.SaveChanges();
+        }
+        private static void WriteProgressLogMessage(DateTime start, string message)
+        {
+            var endTime = DateTime.Now;
+            var duration = endTime.Subtract(start);
+            var builder = new StringBuilder();
+            builder.Append(message).Append(" Execution started at ").Append(start).Append(" and ended at ")
+                .Append(endTime).Append(" for a total run time of ").Append(duration.TotalSeconds).Append(" seconds.");
+            Log.Info(builder.ToString());
         }
 
         #endregion

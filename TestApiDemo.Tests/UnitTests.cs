@@ -1,33 +1,16 @@
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
-using TestApiDemo.Controllers;
-using TestApiDemo.Services;
 
 namespace TestApiDemo.Tests
 {
     public class UnitTests : TestBase<UnitTests>
     {
-        private readonly InventoryController _controller = new InventoryController(new InventoryDataService());
-
-        #region Setup and Breakdown
-
-        [OneTimeSetUp]
-        public void Initialize()
-        {   
-        }
-
-        [OneTimeTearDown]
-        public void Cleanup()
-        {
-        }
-
-        #endregion 
-
         [Test]
         public void Delete()
         {
-            var newProduct = InsertProductForDelete();
+            var newProduct = InsertProductForTest();
 
             if (string.IsNullOrEmpty(newProduct))
             {
@@ -35,14 +18,15 @@ namespace TestApiDemo.Tests
             }
             else
             {
-                _controller.Delete(newProduct);
+                InventoryController.Delete(newProduct);
 
                 var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
                 var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
                 var results = ExecuteQuery(selectSqlString).Tables[0];
+
+
                 Assert.AreEqual(results.Rows.Count, 0);
             }
-            
         }
 
         [Test]
@@ -50,7 +34,7 @@ namespace TestApiDemo.Tests
         {
             var sqlFile = Path.Combine(CurrentDirectory, "SQL", "Get.sql");
             var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
-            var results = JsonSerializer.Serialize(_controller.Get());
+            var results = JsonSerializer.Serialize(InventoryController.Get().Result);
             Assert.AreEqual(results, expected);
         }
 
@@ -62,7 +46,7 @@ namespace TestApiDemo.Tests
 
             var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
             var expected = (ExecuteQuery(File.ReadAllText(sqlFile).Replace("<@Name>", product)).Tables[0].Rows[0][0]).ToString();
-            var results = JsonSerializer.Serialize(_controller.Get(product));
+            var results = JsonSerializer.Serialize(InventoryController.Get(product).Result);
             Assert.AreEqual(results, expected?.TrimStart('[').TrimEnd(']'));
         }
 
