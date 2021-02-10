@@ -15,6 +15,7 @@ namespace TestApiDemo.Tests
         protected const bool PRESERVE_TEST_PRODUCTS = false;
         protected const string URL = "http://localhost:8081/inventory";
         protected const string CONN = "Server=(localdb)\\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;";
+        protected const int POST_RECORD_COUNT = 5;
 
         protected readonly string CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         protected readonly InventoryController InventoryController = new InventoryController(new InventoryDataService());
@@ -33,8 +34,8 @@ namespace TestApiDemo.Tests
             DeleteProductForTest();
         }
 
-        #endregion 
-        
+        #endregion
+
         #region Protected Methods
 
         protected void DeleteProductForTest()

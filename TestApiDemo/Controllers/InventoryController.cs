@@ -48,7 +48,7 @@ namespace TestApiDemo.Controllers
         {
             return Task.FromResult(_dataService.GetByQuantityLevel(filter));
         }
-        
+
         #endregion
 
         // POST: inventory
@@ -56,7 +56,7 @@ namespace TestApiDemo.Controllers
         public Task<DemoResponse> Post([FromBody] IEnumerable<Inventory> value)
         {
             return Task.FromResult(_dataService.Post(value));
-            
+
         }
 
         // PUT: inventory/Apples
@@ -66,7 +66,7 @@ namespace TestApiDemo.Controllers
             return Task.FromResult(_dataService.Put(name, value));
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: inventory/Apples
         [HttpDelete("{name}")]
         public Task<DemoResponse> Delete(string name)
         {

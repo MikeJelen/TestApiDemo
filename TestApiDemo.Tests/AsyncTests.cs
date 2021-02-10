@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TestApiDemo.Models;
 
 namespace TestApiDemo.Tests
 {
@@ -11,6 +12,8 @@ namespace TestApiDemo.Tests
         private const int CONCURRENT_THREADS = 2;
 
         [Test]
+        [Category("Async")]
+        [Property("Priority", 1)]
         public async Task Delete()
         {
             var testProducts = new List<string>();
@@ -44,7 +47,58 @@ namespace TestApiDemo.Tests
                 {
                     caughtExceptions++;
                 }
-                
+
+            });
+
+            Assert.AreEqual(0, caughtExceptions);
+        }
+
+        [Test]
+        [Category("Async")]
+        [Property("Priority", 1)]
+        public async Task Post()
+        {
+            var counter = 0;
+            var inventoryList = new Dictionary<int, List<Inventory>>();
+
+            for (var i = 0; i < CONCURRENT_THREADS; i++)
+            {
+                var inventories = new List<Inventory>();
+                do
+                {
+                    var name = (Guid.NewGuid().ToString()).Replace("-", "");
+                    inventories.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
+                    AddedProducts.Add(name);
+                    counter++;
+
+                } while (counter < POST_RECORD_COUNT);
+
+                inventoryList.Add(i, inventories);
+            }
+
+            
+            var caughtExceptions = 0;
+            var selectSqlString = await File.ReadAllTextAsync(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
+
+            Parallel.ForEach(inventoryList, async inventoryItem =>
+            {
+                try
+                {
+                    var (_, value) = inventoryItem;
+                    var result = await InventoryController.Post(value);
+                    Assert.IsTrue(result.IsSuccessful);
+
+                    foreach (var item in value)
+                    {
+                        var results = ExecuteQuery(selectSqlString.Replace("<@Name>", item.Name)).Tables[0];
+                        Assert.AreEqual(1, results.Rows.Count);
+                    }
+                }
+                catch
+                {
+                    caughtExceptions++;
+                }
+
             });
 
             Assert.AreEqual(0, caughtExceptions);

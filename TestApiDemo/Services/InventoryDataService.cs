@@ -1,9 +1,9 @@
-﻿using NLog;
+﻿using Microsoft.EntityFrameworkCore;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
 using TestApiDemo.Models;
@@ -13,7 +13,7 @@ namespace TestApiDemo.Services
     public class InventoryDataService : IDataService
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        
+
         public IEnumerable<Inventory> Get()
         {
             try
@@ -32,7 +32,7 @@ namespace TestApiDemo.Services
                             CreatedOn = pi.p.CreatedOn
                         });
 
-                Log.Info($"Get (all) product => {result.Count()} result(s)");
+                Log.Info($"Get (all) product => {result.Count()} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -40,7 +40,7 @@ namespace TestApiDemo.Services
                 Log.Error($"Error on Get (all): => {e.Message}");
                 throw;
             }
-            
+
         }
 
         public Inventory GetByName(string name)
@@ -62,7 +62,7 @@ namespace TestApiDemo.Services
                         })
                     .FirstOrDefault(i => i.Name.Equals(name));
 
-                Log.Info($"Get product => {name}");
+                Log.Info($"Get product => {name}.");
                 return result;
             }
             catch (Exception e)
@@ -84,7 +84,7 @@ namespace TestApiDemo.Services
                     _ => throw new NotImplementedException(),
                 };
 
-                Log.Info($"Get quantity => {filter}");
+                Log.Info($"Get quantity => {filter} returned {result.Count()} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -106,7 +106,7 @@ namespace TestApiDemo.Services
                     _ => throw new NotImplementedException(),
                 };
 
-                Log.Info($"Get created => {filter}");
+                Log.Info($"Get created => {filter} returned {result.Count()} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -126,7 +126,7 @@ namespace TestApiDemo.Services
                 var context = new InventoryContext();
                 context.Database.ExecuteSqlRaw($"Exec dbo.sp_DeleteProduct @name = '{name}';");
 
-                response.Message = $"Delete for product {name} successfully completed";
+                response.Message = $"Delete for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
 
                 return response;
@@ -148,7 +148,7 @@ namespace TestApiDemo.Services
                 Log.Error($"Error on Put: => {message}");
                 throw new BadRequestException(message);
             }
-            
+
             try
             {
                 var start = DateTime.Now;
@@ -157,7 +157,7 @@ namespace TestApiDemo.Services
                 var context = new InventoryContext();
                 context.Database.ExecuteSqlRaw($"Exec dbo.sp_UpsertProduct @name = '{name}', @quantity = {inventory.Quantity}, @createdOn = '{inventory.CreatedOn}';");
 
-                response.Message = $"Put for product {name} successfully completed )";
+                response.Message = $"Put for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
 
                 return response;
@@ -168,7 +168,7 @@ namespace TestApiDemo.Services
                 throw;
             }
         }
-        
+
         public DemoResponse Post(IEnumerable<Inventory> inventory)
         {
             try
@@ -182,7 +182,7 @@ namespace TestApiDemo.Services
                 {
                     context.Database.ExecuteSqlRaw(
                         $"Exec dbo.sp_UpsertProduct @name = '{item.Name}', @quantity = {item.Quantity}, @createdOn = '{item.CreatedOn}';");
-                    messageBuilder.Append($"Post for product ").Append(item.Name).AppendLine(" successfully completed");
+                    messageBuilder.Append($"Post for product ").Append(item.Name).AppendLine(" successfully completed.");
                 }
 
                 response.Message = messageBuilder.ToString();
@@ -205,7 +205,7 @@ namespace TestApiDemo.Services
                 .GroupJoin(context.ProductInventories,
                     p => p.ProductId,
                     i => i.ProductId,
-                    (p, i) => new {p, i})
+                    (p, i) => new { p, i })
                 .SelectMany(pi => pi.i.DefaultIfEmpty(),
                     (pi, d) => new Inventory()
                     {
@@ -249,7 +249,7 @@ namespace TestApiDemo.Services
                 .ToList();
 
             // Get The minimum in the quantity table (when no records from previous get min from table)
-            var min = (results.Count == 0) 
+            var min = (results.Count == 0)
                 ? context.ProductInventories.Min(i => i.Quantity)
                 : 0;
 
