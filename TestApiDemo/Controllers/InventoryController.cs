@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Models;
 using TestApiDemo.Services;
@@ -21,55 +21,56 @@ namespace TestApiDemo.Controllers
 
         // GET: inventory
         [HttpGet]
-        public IEnumerable<Inventory> Get()
+        public Task<IEnumerable<Inventory>> Get()
         {
-            return _dataService.Get();
+            return Task.FromResult(_dataService.Get());
         }
 
         // GET: inventory/Apples
         [HttpGet("{name}", Name = "Name")]
-        public Inventory Get(string name)
+        public Task<Inventory> Get(string name)
         {
-            return _dataService.GetByName(name);
+            return Task.FromResult(_dataService.GetByName(name));
         }
 
         // GET: inventory/created/Oldest
         [HttpGet]
         [Route("created/{filter}", Name = "GetByCreated")]
-        public IEnumerable<Inventory> GetByCreated(CreatedFilter filter)
+        public Task<IEnumerable<Inventory>> GetByCreated(CreatedFilter filter)
         {
-            return _dataService.GetByCreated(filter);
+            return Task.FromResult(_dataService.GetByCreated(filter));
         }
 
         // GET: inventory/quantity/Highest
         [HttpGet]
         [Route("quantity/{filter}", Name = "GetByQuantityLevel")]
-        public IEnumerable<Inventory> GetByQuantityLevel(QuantityFilter filter)
+        public Task<IEnumerable<Inventory>> GetByQuantityLevel(QuantityFilter filter)
         {
-            return _dataService.GetByQuantityLevel(filter);
+            return Task.FromResult(_dataService.GetByQuantityLevel(filter));
         }
         
         #endregion
 
         // POST: inventory
         [HttpPost]
-        public void Post([FromBody] IEnumerable<Inventory> value)
+        public Task<DemoResponse> Post([FromBody] IEnumerable<Inventory> value)
         {
-            _dataService.Post(value);
+            return Task.FromResult(_dataService.Post(value));
+            
         }
 
         // PUT: inventory/Apples
         [HttpPut("{name}")]
-        public void Put(string name, [FromBody] Inventory value)
+        public Task<DemoResponse> Put(string name, [FromBody] Inventory value)
         {
-            _dataService.Put(name, value);
+            return Task.FromResult(_dataService.Put(name, value));
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{name}")]
-        public void Delete(string name)
+        public Task<DemoResponse> Delete(string name)
         {
-            _dataService.Delete(name);
+            return Task.FromResult(_dataService.Delete(name));
         }
     }
 }

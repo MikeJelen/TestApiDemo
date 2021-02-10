@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using System.IO;
 using System.Text.Json;
@@ -28,22 +27,18 @@ namespace TestApiDemo.Tests
         [Test]
         public void Delete()
         {
-            var newProduct = (Guid.NewGuid().ToString()).Replace("-", "");
+            var newProduct = InsertProductForDelete();
 
-            var insertSqlFile = Path.Combine(CurrentDirectory, "SQL", "InsertProduct.sql");
-            _ = ExecuteQuery(File.ReadAllText(insertSqlFile).Replace("<@Name>", newProduct));
-
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
-            var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
-
-            var newProductVerifiedResult = ExecuteQuery(selectSqlString).Tables[0];
-            if (newProductVerifiedResult.Rows.Count != 1)
+            if (string.IsNullOrEmpty(newProduct))
             {
-                Assert.Fail($"Product {newProduct} was not inserted correctly ({newProductVerifiedResult.Rows.Count} returned). Test terminated.");
+                Assert.Fail($"Product {newProduct} was not inserted correctly. Test terminated.");
             }
             else
             {
                 _controller.Delete(newProduct);
+
+                var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
+                var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
                 var results = ExecuteQuery(selectSqlString).Tables[0];
                 Assert.AreEqual(results.Rows.Count, 0);
             }

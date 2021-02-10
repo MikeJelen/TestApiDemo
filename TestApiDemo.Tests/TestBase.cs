@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
@@ -13,6 +14,20 @@ namespace TestApiDemo.Tests
         protected readonly string CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         #region Protected Methods
+
+        protected string InsertProductForDelete()
+        {
+            var newProduct = (Guid.NewGuid().ToString()).Replace("-", "");
+
+            var insertSqlFile = Path.Combine(CurrentDirectory, "SQL", "InsertProduct.sql");
+            _ = ExecuteQuery(File.ReadAllText(insertSqlFile).Replace("<@Name>", newProduct));
+
+            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
+            var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
+
+            var newProductVerifiedResult = ExecuteQuery(selectSqlString).Tables[0];
+            return (newProductVerifiedResult.Rows.Count == 1) ? newProduct : null;
+        }
 
         protected static DataSet ExecuteQuery(string query)
         {

@@ -28,7 +28,7 @@
     <None Update="SQL\GetFirstProduct.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SQL\GetLastProduct.sql">
+    <None Update="SQL\GetProducts.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="SQL\InsertProduct.sql">

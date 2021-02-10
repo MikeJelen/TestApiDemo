@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using TestApiDemo.Enumerations;
+using TestApiDemo.Exceptions;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Services
@@ -10,33 +12,7 @@ namespace TestApiDemo.Services
     public class InventoryDataService : IDataService
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-
-        public void Delete(string name)
-        {
-            try
-            {
-                var context = new InventoryContext();
-                var id = GetIdFromName(context, name);
-
-                context.ProductInventories.RemoveRange(
-                    context.ProductInventories.Where(p => p.ProductId.Equals(id))
-                );
-
-                context.Products.RemoveRange(
-                    context.Products.Where(p => p.ProductId.Equals(id))
-                );
-
-                context.SaveChanges();
-                Log.Info($"Deleted product => {name}");
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Error on deletion: => {e.Message}");
-                throw;
-            }
-            
-        }
-
+        
         public IEnumerable<Inventory> Get()
         {
             try
@@ -139,81 +115,159 @@ namespace TestApiDemo.Services
             }
         }
 
-        public void Put(string name, Inventory inventory)
+        public DemoResponse Delete(string name)
         {
-            if (!name.Equals(inventory.Name))
+            try
+            {
+                var context = new InventoryContext();
+                var response = new DemoResponse() { IsSuccessful = true };
+
+                if (!GetProductIdFromName(context, name, out var id))
+                {
+                    throw new BadRequestException($"Error on delete. Product {name} not found.");
+                }
+
+                context.ProductInventories.RemoveRange(
+                    context.ProductInventories.Where(p => p.ProductId.Equals(id))
+                );
+
+                context.Products.RemoveRange(
+                    context.Products.Where(p => p.ProductId.Equals(id))
+                );
+
+                context.SaveChanges();
+
+                response.Message = $"Delete for product {name} successfully completed";
+                Log.Info(response.Message);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error on Delete: => {e.Message}");
+                throw;
+            }
+        }
+
+        public DemoResponse Put(string name, Inventory inventory)
+        {
+            if (!name.Equals(inventory.Name, StringComparison.OrdinalIgnoreCase))
             {
                 var message =
-                    $"Invalid payload. Name ({name}) does not match the name in the input json ({inventory.Name})";
-                Log.Error($"Error on put: => {message}");
-                throw new Exception(message);
+                    $"Name ({name}) does not match the name in the input json ({inventory.Name})";
+
+                Log.Error($"Error on Put: => {message}");
+                throw new BadRequestException(message);
             }
             
             try
             {
                 var context = new InventoryContext();
-                var product = (context.Products.Where(p => p.Name.Equals(name))).FirstOrDefault();
-
-                if (product == null)
+                var response = new DemoResponse() { IsSuccessful = true };
+                var isUpdate = false;
+                
+                if (!GetProductFromName(context, name, out var product))
                 {
                     InsertProduct(context, name, inventory.Quantity);
                 }
                 else
                 {
+                    isUpdate = true;
                     UpsertProductInventory(context, product.ProductId, inventory.Quantity);
                 }
 
                 context.SaveChanges();
-                Log.Info($"Put completed => {name}");
+
+                var messageBuilder = new StringBuilder();
+                messageBuilder.Append($"Put for product {name} successfully completed (")
+                    .Append(isUpdate ? "update" : "insert").Append(")");
+                response.Message = messageBuilder.ToString();
+                Log.Info(response.Message);
+
+                return response;
             }
             catch (Exception e)
             {
-                Log.Error($"Error on put: => {e.Message}");
+                Log.Error($"Error on Put: => {e.Message}");
                 throw;
             }
-
         }
 
-        public void Post(IEnumerable<Inventory> inventory)
+        public DemoResponse Post(IEnumerable<Inventory> inventory)
         {
             try
             {
-                var processedItems = new List<string>();
+                var response = new DemoResponse() { IsSuccessful = true };
+
+                var processedItems = new Dictionary<string, bool>();
                 var context = new InventoryContext();
                 foreach (var item in inventory)
                 {
-                    processedItems.Add(item.Name);
-                    var product = (context.Products.Where(p => p.Name.Equals(item.Name))).FirstOrDefault();
-                    if (product == null)
+                    if (!GetProductFromName(context, item.Name, out var product))
                     {
+                        processedItems.Add(item.Name, false);
                         InsertProduct(context, item.Name, item.Quantity);
                     }
                     else
                     {
+                        processedItems.Add(item.Name, true);
                         UpsertProductInventory(context, product.ProductId, item.Quantity);
                     }
                 }
 
-
                 context.SaveChanges();
-                Log.Info($"Put post => {string.Join(",", processedItems)}");
+
+                var messageBuilder = new StringBuilder();
+                foreach (var product in processedItems)
+                {
+                    messageBuilder.Append($"Post for product {product.Key} successfully completed (")
+                        .Append(product.Value ? "update" : "insert").AppendLine(")");
+                }
+
+                response.Message = messageBuilder.ToString();
+                Log.Info(response.Message);
+
+                return response;
             }
             catch (Exception e)
             {
-                Log.Error($"Error on put: => {e.Message}");
+                Log.Error($"Error on Post: => {e.Message}");
                 throw;
             }
         }
 
-        
+
         #region Helper Functions for CRUD Operations 
 
-        private static int GetIdFromName(InventoryContext context, string name)
+        private static bool GetProductFromName(InventoryContext context, string name, out Product product)
         {
-            return (context.Products
-                .Where(p => p.Name.Equals(name))
-                .Select(p => p.ProductId))
-                .SingleOrDefault();
+            var result = false;
+            product = new Product();
+
+            if (context.Products.Any(p => p.Name.Equals(name)))
+            {
+                result = true;
+                product = context.Products.SingleOrDefault(p => p.Name.Equals(name));
+            }
+
+            return result;
+        }
+
+        private static bool GetProductIdFromName(InventoryContext context, string name, out int id)
+        {
+            var result = false;
+            id = -1;
+
+            if (context.Products.Any(p => p.Name.Equals(name)))
+            {
+                result = true;
+                id = (context.Products
+                        .Where(p => p.Name.Equals(name))
+                        .Select(p => p.ProductId))
+                    .SingleOrDefault();
+            }
+
+            return result;
         }
         
         private static IEnumerable<Inventory> GetInventoryByCreatedOn(InventoryContext context, DateTime createdOn)
