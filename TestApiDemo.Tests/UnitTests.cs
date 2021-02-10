@@ -25,7 +25,7 @@ namespace TestApiDemo.Tests
                 var results = ExecuteQuery(selectSqlString).Tables[0];
 
 
-                Assert.AreEqual(results.Rows.Count, 0);
+                Assert.AreEqual(0, results.Rows.Count);
             }
         }
 
@@ -35,7 +35,7 @@ namespace TestApiDemo.Tests
             var sqlFile = Path.Combine(CurrentDirectory, "SQL", "Get.sql");
             var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.Get().Result);
-            Assert.AreEqual(results, expected);
+            Assert.AreEqual(expected, results);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace TestApiDemo.Tests
             var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
             var expected = (ExecuteQuery(File.ReadAllText(sqlFile).Replace("<@Name>", product)).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.Get(product).Result);
-            Assert.AreEqual(results, expected?.TrimStart('[').TrimEnd(']'));
+            Assert.AreEqual(expected?.TrimStart('[').TrimEnd(']'), results);
         }
 
     }

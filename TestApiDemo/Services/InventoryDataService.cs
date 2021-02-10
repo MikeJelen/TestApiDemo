@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
 using TestApiDemo.Models;
@@ -120,23 +121,10 @@ namespace TestApiDemo.Services
             try
             {
                 var start = DateTime.Now;
-                var context = new InventoryContext();
                 var response = new DemoResponse() { IsSuccessful = true };
 
-                if (!GetProductIdFromName(context, name, out var id))
-                {
-                    throw new BadRequestException($"Error on delete. Product {name} not found.");
-                }
-
-                context.ProductInventories.RemoveRange(
-                    context.ProductInventories.Where(p => p.ProductId.Equals(id))
-                );
-
-                context.Products.RemoveRange(
-                    context.Products.Where(p => p.ProductId.Equals(id))
-                );
-
-                context.SaveChanges();
+                var context = new InventoryContext();
+                context.Database.ExecuteSqlRaw($"Exec dbo.sp_DeleteProduct @name = '{name}';");
 
                 response.Message = $"Delete for product {name} successfully completed";
                 WriteProgressLogMessage(start, response.Message);
@@ -164,26 +152,12 @@ namespace TestApiDemo.Services
             try
             {
                 var start = DateTime.Now;
-                var context = new InventoryContext();
                 var response = new DemoResponse() { IsSuccessful = true };
-                var isUpdate = false;
-                
-                if (!GetProductFromName(context, name, out var product))
-                {
-                    InsertProduct(context, name, inventory.Quantity);
-                }
-                else
-                {
-                    isUpdate = true;
-                    UpsertProductInventory(context, product.ProductId, inventory.Quantity);
-                }
 
-                context.SaveChanges();
+                var context = new InventoryContext();
+                context.Database.ExecuteSqlRaw($"Exec dbo.sp_UpsertProduct @name = '{name}', @quantity = {inventory.Quantity}, @createdOn = '{inventory.CreatedOn}';");
 
-                var messageBuilder = new StringBuilder();
-                messageBuilder.Append($"Put for product {name} successfully completed (")
-                    .Append(isUpdate ? "update" : "insert").Append(")");
-                response.Message = messageBuilder.ToString();
+                response.Message = $"Put for product {name} successfully completed )";
                 WriteProgressLogMessage(start, response.Message);
 
                 return response;
@@ -201,30 +175,14 @@ namespace TestApiDemo.Services
             {
                 var start = DateTime.Now;
                 var response = new DemoResponse() { IsSuccessful = true };
+                var messageBuilder = new StringBuilder();
 
-                var processedItems = new Dictionary<string, bool>();
                 var context = new InventoryContext();
                 foreach (var item in inventory)
                 {
-                    if (!GetProductFromName(context, item.Name, out var product))
-                    {
-                        processedItems.Add(item.Name, false);
-                        InsertProduct(context, item.Name, item.Quantity);
-                    }
-                    else
-                    {
-                        processedItems.Add(item.Name, true);
-                        UpsertProductInventory(context, product.ProductId, item.Quantity);
-                    }
-                }
-
-                context.SaveChanges();
-
-                var messageBuilder = new StringBuilder();
-                foreach (var product in processedItems)
-                {
-                    messageBuilder.Append($"Post for product {product.Key} successfully completed (")
-                        .Append(product.Value ? "update" : "insert").AppendLine(")");
+                    context.Database.ExecuteSqlRaw(
+                        $"Exec dbo.sp_UpsertProduct @name = '{item.Name}', @quantity = {item.Quantity}, @createdOn = '{item.CreatedOn}';");
+                    messageBuilder.Append($"Post for product ").Append(item.Name).AppendLine(" successfully completed");
                 }
 
                 response.Message = messageBuilder.ToString();
@@ -241,37 +199,6 @@ namespace TestApiDemo.Services
 
         #region Helper Functions
 
-        private static bool GetProductFromName(InventoryContext context, string name, out Product product)
-        {
-            var result = false;
-            product = new Product();
-
-            if (context.Products.Any(p => p.Name.Equals(name)))
-            {
-                result = true;
-                product = context.Products.SingleOrDefault(p => p.Name.Equals(name));
-            }
-
-            return result;
-        }
-
-        private static bool GetProductIdFromName(InventoryContext context, string name, out int id)
-        {
-            var result = false;
-            id = -1;
-
-            if (context.Products.Any(p => p.Name.Equals(name)))
-            {
-                result = true;
-                id = (context.Products
-                        .Where(p => p.Name.Equals(name))
-                        .Select(p => p.ProductId))
-                    .SingleOrDefault();
-            }
-
-            return result;
-        }
-        
         private static IEnumerable<Inventory> GetInventoryByCreatedOn(InventoryContext context, DateTime createdOn)
         {
             return context.Products
@@ -343,44 +270,17 @@ namespace TestApiDemo.Services
             return results;
         }
 
-        private static void InsertProduct(InventoryContext context, string name, int quantity)
-        {
-            var product = new Product()
-            {
-                Name = name,
-                ProductInventories = new List<ProductInventory>() 
-                    { new ProductInventory() { Quantity = quantity } }
-            };
-            
-            context.Products.Add(product);
-            context.SaveChanges();
-        }
-
-        private static void UpsertProductInventory(InventoryContext context, int id, int quantity)
-        {
-            var productInventory = (context.ProductInventories
-                .Where(p => p.ProductId.Equals(id))).SingleOrDefault();
-
-            if (productInventory == null)
-            {
-                productInventory = new ProductInventory() {ProductId = id, Quantity = quantity};
-                context.ProductInventories.Add(productInventory);
-            }
-            else
-            {
-                productInventory.Quantity = quantity;
-            }
-
-            
-            context.SaveChanges();
-        }
         private static void WriteProgressLogMessage(DateTime start, string message)
         {
+            const string dateFormat = "HH:mm:ss.fffffffK";
+
             var endTime = DateTime.Now;
             var duration = endTime.Subtract(start);
             var builder = new StringBuilder();
-            builder.Append(message).Append(" Execution started at ").Append(start).Append(" and ended at ")
-                .Append(endTime).Append(" for a total run time of ").Append(duration.TotalSeconds).Append(" seconds.");
+            builder.Append(message).Append(" Execution started at ")
+                .Append(start.ToString(dateFormat)).Append(" and ended at ")
+                .Append(endTime.ToString(dateFormat)).Append(" for a total run time of ")
+                .Append(duration.TotalSeconds).Append(" seconds.");
             Log.Info(builder.ToString());
         }
 

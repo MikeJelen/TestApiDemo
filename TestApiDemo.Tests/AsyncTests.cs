@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -27,13 +28,26 @@ namespace TestApiDemo.Tests
             }
 
             var selectSqlString = await File.ReadAllTextAsync(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
+            var caughtExceptions = 0;
 
             Parallel.ForEach(testProducts, async testProduct =>
             {
-                var asyncResult = await InventoryController.Delete(testProduct);
-                var results = ExecuteQuery(selectSqlString.Replace("<@Name>", testProduct)).Tables[0];
-                Assert.AreEqual(results.Rows.Count, 0);
+                try
+                {
+                    var asyncResult = await InventoryController.Delete(testProduct);
+                    Assert.IsTrue(asyncResult.IsSuccessful);
+
+                    var results = ExecuteQuery(selectSqlString.Replace("<@Name>", testProduct)).Tables[0];
+                    Assert.AreEqual(0, results.Rows.Count);
+                }
+                catch
+                {
+                    caughtExceptions++;
+                }
+                
             });
+
+            Assert.AreEqual(0, caughtExceptions);
         }
     }
 }

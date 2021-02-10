@@ -24,26 +24,14 @@
 1. Design Decisions
 	- Seperate tables (in this case) is overkill but allows the opportunity for joins
 	- EF is easy to work with in an example like this but not necessary
-	- Service not using "using clauses for the contexct cause of DI (ConfigureServices)
+	- Service not using "using" clauses for the contexct cause of DI (ConfigureServices)
 
 
 ## DB Tables
-1.  CREATE TABLE [dbo].[Product] (
-		[ProductId] INT           IDENTITY (1, 1) NOT NULL,
-		[Name]      VARCHAR (200) NOT NULL,
-		[CreatedOn] DATETIME2 (7) NOT NULL
-	);
-	CREATE UNIQUE NONCLUSTERED INDEX [UIX_Product_Name]
-		ON [dbo].[Product]([Name] ASC);
+1. Script for DB initialization
+	- \TestApiDemo\TestApiDemo.Tests\SQL\InitializeTestDB.sql
 
-
-
-2.	CREATE TABLE [dbo].[ProductInventory] (
-		[ProductInventoryId] INT           IDENTITY (1, 1) NOT NULL,
-		[ProductId]          INT           NOT NULL,
-		[Quantity]           INT           NOT NULL,
-		[CreatedOn]          DATETIME2 (7) NOT NULL,
-		[LastUpdateOn]       DATETIME2 (7) NOT NULL
-	);
-
-
+## Notes
+1. Scaffolding (https://www.entityframeworktutorial.net/efcore/create-model-for-existing-database-in-ef-core.aspx)
+	- Scaffold-DbContext "Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
+	- The rename MikeDemoContext to InventoryContext
