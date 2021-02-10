@@ -1,5 +1,4 @@
-﻿
-select	  p.[Name]					as 'Name'
+﻿select	  p.[Name]					as 'Name'
 		, isnull(i.[Quantity], 0)	as 'Quantity'
 		, replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0')
 									as 'CreatedOn'	--removes trailing zeros in the milliseconds

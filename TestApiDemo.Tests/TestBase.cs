@@ -1,12 +1,16 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Reflection;
 
 namespace TestApiDemo.Tests
 {
     public abstract class TestBase<T>
     {
-        protected const string URL = "http://localhost:8081";
+        protected const string URL = "http://localhost:8081/inventory";
         protected const string CONN = "Server=(localdb)\\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;";
+
+        protected readonly string CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         #region Protected Methods
 
