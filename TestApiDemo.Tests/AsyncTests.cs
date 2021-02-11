@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using TestApiDemo.Models;
 
@@ -30,9 +29,7 @@ namespace TestApiDemo.Tests
                 testProducts.Add(newProduct);
             }
 
-            var selectSqlString = await File.ReadAllTextAsync(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
             var caughtExceptions = 0;
-
             Parallel.ForEach(testProducts, async testProduct =>
             {
                 try
@@ -40,7 +37,7 @@ namespace TestApiDemo.Tests
                     var asyncResult = await InventoryController.Delete(testProduct);
                     Assert.IsTrue(asyncResult.IsSuccessful);
 
-                    var results = ExecuteQuery(selectSqlString.Replace("<@Name>", testProduct)).Tables[0];
+                    var results = ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", testProduct)).Tables[0];
                     Assert.AreEqual(0, results.Rows.Count);
                 }
                 catch
@@ -66,7 +63,7 @@ namespace TestApiDemo.Tests
                 var inventories = new List<Inventory>();
                 do
                 {
-                    var name = (Guid.NewGuid().ToString()).Replace("-", "");
+                    var name = CreateTestProductName();
                     inventories.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
                     AddedProducts.Add(name);
                     counter++;
@@ -78,8 +75,6 @@ namespace TestApiDemo.Tests
 
 
             var caughtExceptions = 0;
-            var selectSqlString = await File.ReadAllTextAsync(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
-
             Parallel.ForEach(inventoryList, async inventoryItem =>
             {
                 try
@@ -90,7 +85,7 @@ namespace TestApiDemo.Tests
 
                     foreach (var item in value)
                     {
-                        var results = ExecuteQuery(selectSqlString.Replace("<@Name>", item.Name)).Tables[0];
+                        var results = ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", item.Name)).Tables[0];
                         Assert.AreEqual(1, results.Rows.Count);
                     }
                 }

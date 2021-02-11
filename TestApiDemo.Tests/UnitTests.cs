@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
@@ -25,11 +24,8 @@ namespace TestApiDemo.Tests
             else
             {
                 _ = InventoryController.Delete(newProduct);
-
-                var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
-                var selectSqlString = File.ReadAllText(sqlFile).Replace("<@Name>", newProduct);
+                var selectSqlString = Properties.Resources.GetByName.Replace("<@Name>", newProduct);
                 var results = ExecuteQuery(selectSqlString).Tables[0];
-
                 Assert.AreEqual(0, results.Rows.Count);
             }
         }
@@ -39,8 +35,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetAllProducts()
         {
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "Get.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.Get).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.Get().Result);
             Assert.AreEqual(expected, results);
         }
@@ -50,11 +45,8 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetProduct()
         {
-            var productSql = Path.Combine(CurrentDirectory, "SQL", "GetFirstProduct.sql");
-            var product = (ExecuteQuery(File.ReadAllText(productSql)).Tables[0].Rows[0][0]).ToString();
-
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile).Replace("<@Name>", product)).Tables[0].Rows[0][0]).ToString();
+            var product = (ExecuteQuery(Properties.Resources.GetFirstProduct).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", product)).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.Get(product).Result);
             Assert.AreEqual(expected?.TrimStart('[').TrimEnd(']'), results);
         }
@@ -64,8 +56,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetHighestQuantity()
         {
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetHighestQuantity.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.GetHighestQuantity).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.GetByQuantityLevel(QuantityFilter.Highest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -75,8 +66,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetLowestQuantity()
         {
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetLowestQuantity.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.GetLowestQuantity).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.GetByQuantityLevel(QuantityFilter.Lowest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -87,8 +77,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetNewest()
         {
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetNewest.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.GetNewest).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.GetByCreated(CreatedFilter.Newest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -98,8 +87,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetOldest()
         {
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetOldest.sql");
-            var expected = (ExecuteQuery(File.ReadAllText(sqlFile)).Tables[0].Rows[0][0]).ToString();
+            var expected = (ExecuteQuery(Properties.Resources.GetOldest).Tables[0].Rows[0][0]).ToString();
             var results = JsonSerializer.Serialize(InventoryController.GetByCreated(CreatedFilter.Oldest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -111,11 +99,10 @@ namespace TestApiDemo.Tests
         {
             var counter = 0;
             var inventoryList = new List<Inventory>();
-            var sqlQuery = File.ReadAllText(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
-
+            
             do
             {
-                var name = (Guid.NewGuid().ToString()).Replace("-", "");
+                var name = CreateTestProductName();
                 inventoryList.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
                 AddedProducts.Add(name);
                 counter++;
@@ -123,10 +110,10 @@ namespace TestApiDemo.Tests
             } while (counter < POST_RECORD_COUNT);
 
             _ = InventoryController.Post(inventoryList);
-
             foreach (var item in inventoryList)
             {
-                var results = ExecuteQuery(sqlQuery.Replace("<@Name>", item.Name)).Tables[0];
+                var results = ExecuteQuery(
+                    Properties.Resources.GetByName.Replace("<@Name>", item.Name)).Tables[0];
                 Assert.AreEqual(1, results.Rows.Count);
             }
         }
@@ -136,15 +123,13 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void Put()
         {
-            var name = (Guid.NewGuid().ToString()).Replace("-", "");
+            var name = CreateTestProductName();
             var inventory = new Inventory() { Name = name, Quantity = 900, CreatedOn = DateTime.Now };
             AddedProducts.Add(name);
 
             _ = InventoryController.Put(name, inventory);
-
-            var sqlFile = Path.Combine(CurrentDirectory, "SQL", "GetByName.sql");
-            var results = ExecuteQuery(File.ReadAllText(sqlFile).Replace("<@Name>", name)).Tables[0];
-
+            var results = ExecuteQuery(
+                Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0];
             Assert.AreEqual(1, results.Rows.Count);
         }
 
