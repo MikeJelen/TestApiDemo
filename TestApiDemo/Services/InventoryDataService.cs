@@ -77,12 +77,12 @@ namespace TestApiDemo.Services
             try
             {
                 var context = new InventoryContext();
-                var result = filter switch
+                var result = (filter switch
                 {
                     QuantityFilter.Highest => GetInventoryByMaxQuantity(context),
                     QuantityFilter.Lowest => GetInventoryByMinQuantity(context),
                     _ => throw new NotImplementedException(),
-                };
+                }).ToList();
 
                 Log.Info($"Get quantity => {filter} returned {result.Count()} result(s).");
                 return result;
@@ -99,12 +99,12 @@ namespace TestApiDemo.Services
             try
             {
                 var context = new InventoryContext();
-                var result = filter switch
+                var result = (filter switch
                 {
                     CreatedFilter.Newest => GetInventoryByCreatedOn(context, context.Products.Max(p => p.CreatedOn)),
                     CreatedFilter.Oldest => GetInventoryByCreatedOn(context, context.Products.Min(p => p.CreatedOn)),
                     _ => throw new NotImplementedException(),
-                };
+                }).ToList();
 
                 Log.Info($"Get created => {filter} returned {result.Count()} result(s).");
                 return result;

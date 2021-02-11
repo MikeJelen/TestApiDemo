@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Text.Json;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Models;
@@ -95,7 +96,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void Post()
         {
-            var inventoryList = CreateInventoryList();
+            var inventoryList = CreateInventoryList().ToList();
             _ = InventoryController.Post(inventoryList);
             foreach (var item in inventoryList)
             {
