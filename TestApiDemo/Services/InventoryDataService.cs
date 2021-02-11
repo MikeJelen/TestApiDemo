@@ -25,14 +25,14 @@ namespace TestApiDemo.Services
                         i => i.ProductId,
                         (p, i) => new { p, i }))
                     .SelectMany(pi => pi.i.DefaultIfEmpty(),
-                        (pi, d) => new Inventory()
+                        (pi, d) => new Inventory
                         {
                             Name = pi.p.Name,
                             Quantity = (d == null) ? 0 : d.Quantity,
                             CreatedOn = pi.p.CreatedOn
                         });
 
-                Log.Info($"Get (all) product => {result.Count()} result(s).");
+                Log.Info($"Get (all) product => {result.ToList().Count} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -54,7 +54,7 @@ namespace TestApiDemo.Services
                         i => i.ProductId,
                         (p, i) => new { p, i }))
                     .SelectMany(pi => pi.i.DefaultIfEmpty(),
-                        (pi, d) => new Inventory()
+                        (pi, d) => new Inventory
                         {
                             Name = pi.p.Name,
                             Quantity = (d == null) ? 0 : d.Quantity,
@@ -81,10 +81,10 @@ namespace TestApiDemo.Services
                 {
                     QuantityFilter.Highest => GetInventoryByMaxQuantity(context),
                     QuantityFilter.Lowest => GetInventoryByMinQuantity(context),
-                    _ => throw new NotImplementedException(),
+                    _ => throw new NotImplementedException()
                 }).ToList();
 
-                Log.Info($"Get quantity => {filter} returned {result.Count()} result(s).");
+                Log.Info($"Get quantity => {filter} returned {result.ToList().Count} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -103,10 +103,10 @@ namespace TestApiDemo.Services
                 {
                     CreatedFilter.Newest => GetInventoryByCreatedOn(context, context.Products.Max(p => p.CreatedOn)),
                     CreatedFilter.Oldest => GetInventoryByCreatedOn(context, context.Products.Min(p => p.CreatedOn)),
-                    _ => throw new NotImplementedException(),
+                    _ => throw new NotImplementedException()
                 }).ToList();
 
-                Log.Info($"Get created => {filter} returned {result.Count()} result(s).");
+                Log.Info($"Get created => {filter} returned {result.ToList().Count} result(s).");
                 return result;
             }
             catch (Exception e)
@@ -121,7 +121,10 @@ namespace TestApiDemo.Services
             try
             {
                 var start = DateTime.UtcNow;
-                var response = new DemoResponse() { IsSuccessful = true };
+                var response = new DemoResponse
+                {
+                    IsSuccessful = true
+                };
 
                 var context = new InventoryContext();
                 context.Database.ExecuteSqlRaw($"Exec {Properties.Resources.StoredProcedure_DeleteProduct} @name = '{name}';");
@@ -144,7 +147,10 @@ namespace TestApiDemo.Services
             {
                 ValidatePayload(inventory, name);
                 var start = DateTime.UtcNow;
-                var response = new DemoResponse() { IsSuccessful = true };
+                var response = new DemoResponse
+                {
+                    IsSuccessful = true
+                };
 
                 var context = new InventoryContext();
                 context.Database.ExecuteSqlRaw($"Exec {Properties.Resources.StoredProcedure_UpsertProduct} @name = '{name}', @quantity = {inventory.Quantity}, @createdOn = '{inventory.CreatedOn}';");
@@ -166,7 +172,10 @@ namespace TestApiDemo.Services
             try
             {
                 var start = DateTime.UtcNow;
-                var response = new DemoResponse() { IsSuccessful = true };
+                var response = new DemoResponse
+                {
+                    IsSuccessful = true
+                };
                 var messageBuilder = new StringBuilder();
 
                 var context = new InventoryContext();
@@ -175,7 +184,7 @@ namespace TestApiDemo.Services
                     ValidatePayload(item);
                     context.Database.ExecuteSqlRaw(
                         $"Exec {Properties.Resources.StoredProcedure_UpsertProduct} @name = '{item.Name}', @quantity = {item.Quantity}, @createdOn = '{item.CreatedOn}';");
-                    messageBuilder.Append($"Post for product ").Append(item.Name).AppendLine(" successfully completed.");
+                    messageBuilder.Append("Post for product ").Append(item.Name).AppendLine(" successfully completed.");
                 }
 
                 response.Message = messageBuilder.ToString();
@@ -200,7 +209,7 @@ namespace TestApiDemo.Services
                     i => i.ProductId,
                     (p, i) => new { p, i })
                 .SelectMany(pi => pi.i.DefaultIfEmpty(),
-                    (pi, d) => new Inventory()
+                    (pi, d) => new Inventory
                     {
                         Name = pi.p.Name,
                         Quantity = (d == null) ? 0 : d.Quantity,
@@ -219,7 +228,7 @@ namespace TestApiDemo.Services
                         i => i.ProductId,
                         (p, i) => new { p, i })
                     .SelectMany(pi => pi.i.DefaultIfEmpty(),
-                        (pi, d) => new Inventory()
+                        (pi, d) => new Inventory
                         {
                             Name = pi.p.Name,
                             Quantity = (d == null) ? 0 : d.Quantity,
@@ -233,7 +242,7 @@ namespace TestApiDemo.Services
             // Get a list of items that have no records in the inventory table - this means 0 quantity because its a new product
             var results = (context.Products
                 .Where(p => !context.ProductInventories.Any(i => p.ProductId.Equals(i.ProductId)))
-                .Select(p => new Inventory()
+                .Select(p => new Inventory
                 {
                     Name = p.Name,
                     Quantity = 0,
@@ -251,7 +260,7 @@ namespace TestApiDemo.Services
                     .Join(context.ProductInventories,
                         product => product.ProductId,
                         inventory => inventory.ProductId,
-                        (product, inventory) => new Inventory()
+                        (product, inventory) => new Inventory
                         {
                             Name = product.Name,
                             Quantity = inventory.Quantity,

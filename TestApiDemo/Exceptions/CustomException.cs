@@ -5,7 +5,7 @@ namespace TestApiDemo.Exceptions
 {
     public class CustomException : Exception
     {
-        public HttpStatusCode StatusCode { get; private set; }
+        public HttpStatusCode StatusCode { get; }
 
         protected CustomException(HttpStatusCode statusCode, string message) : base(message)
         {

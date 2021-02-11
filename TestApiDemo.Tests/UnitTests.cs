@@ -112,7 +112,12 @@ namespace TestApiDemo.Tests
         public void Put()
         {
             var name = CreateTestProductName();
-            var inventory = new Inventory() { Name = name, Quantity = 900, CreatedOn = DateTime.Now };
+            var inventory = new Inventory
+            {
+                Name = name, 
+                Quantity = 900, 
+                CreatedOn = DateTime.UtcNow
+            };
             AddedProducts.Add(name);
 
             _ = InventoryController.Put(name, inventory);

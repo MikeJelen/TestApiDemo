@@ -26,7 +26,7 @@ namespace TestApiDemo.Tests
         public void PutFutureDate()
         {
             var name = CreateTestProductName();
-            var inventory = new Inventory()
+            var inventory = new Inventory
             {
                 Name = CreateTestProductName(), 
                 Quantity = 45, 
@@ -45,7 +45,7 @@ namespace TestApiDemo.Tests
         public void PutUnmatchedNames()
         {
             var name = CreateTestProductName();
-            var inventory = new Inventory()
+            var inventory = new Inventory
             {
                 Name = CreateTestProductName(), 
                 Quantity = 900, 
@@ -64,9 +64,9 @@ namespace TestApiDemo.Tests
         public void PostZeroQuantity()
         {
             var name = CreateTestProductName();
-            var inventory = new List<Inventory>()
+            var inventory = new List<Inventory>
             {
-                new Inventory()
+                new Inventory
                 {
                     Name = name, 
                     Quantity = -1, 

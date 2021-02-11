@@ -38,12 +38,10 @@ namespace TestApiDemo
                     {
                         Name = "Michael Jelen",
                         Email = "MJel17@gmail.com",
-                        Url = new Uri("https://github.com/MikeJelen"),
+                        Url = new Uri("https://github.com/MikeJelen")
                     }
                 });
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

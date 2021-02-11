@@ -35,7 +35,7 @@ namespace TestApiDemo.Tests
 
         protected static string CreateTestProductName()
         {
-            return (Guid.NewGuid().ToString()).Replace("-", "");
+            return Guid.NewGuid().ToString().Replace("-", "");
         }
 
         protected IEnumerable<Inventory> CreateInventoryList()
@@ -47,7 +47,12 @@ namespace TestApiDemo.Tests
             do
             {
                 var name = CreateTestProductName();
-                inventoryList.Add(new Inventory() { Name = name, Quantity = random.Next(1,500), CreatedOn = DateTime.UtcNow });
+                inventoryList.Add(new Inventory
+                {
+                    Name = name, 
+                    Quantity = random.Next(1,500), 
+                    CreatedOn = DateTime.UtcNow
+                });
                 AddedProducts.Add(name);
                 counter++;
 
