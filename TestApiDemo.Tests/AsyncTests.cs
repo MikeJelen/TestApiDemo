@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TestApiDemo.Models;
@@ -53,21 +52,11 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void Post()
         {
-            var counter = 0;
             var inventoryList = new Dictionary<int, List<Inventory>>();
-
             for (var i = 0; i < int.Parse(Properties.Resources.ConcurrentThreads); i++)
             {
                 var inventories = new List<Inventory>();
-                do
-                {
-                    var name = CreateTestProductName();
-                    inventories.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
-                    AddedProducts.Add(name);
-                    counter++;
-
-                } while (counter < int.Parse(Properties.Resources.PostRecordCount));
-
+                inventories.AddRange(CreateInventoryList());
                 inventoryList.Add(i, inventories);
             }
 

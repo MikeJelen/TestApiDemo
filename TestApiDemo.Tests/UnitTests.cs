@@ -1,9 +1,7 @@
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using TestApiDemo.Enumerations;
-using TestApiDemo.Exceptions;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Tests
@@ -97,18 +95,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void Post()
         {
-            var counter = 0;
-            var inventoryList = new List<Inventory>();
-            
-            do
-            {
-                var name = CreateTestProductName();
-                inventoryList.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
-                AddedProducts.Add(name);
-                counter++;
-
-            } while (counter < int.Parse(Properties.Resources.PostRecordCount));
-
+            var inventoryList = CreateInventoryList();
             _ = InventoryController.Post(inventoryList);
             foreach (var item in inventoryList)
             {
@@ -131,20 +118,6 @@ namespace TestApiDemo.Tests
             var results = ExecuteQuery(
                 Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0];
             Assert.AreEqual(1, results.Rows.Count);
-        }
-
-        [Test]
-        [Category("Functional")]
-        [Property("Priority", 2)]
-        public void PutUnmatchedNames()
-        {
-            var name = CreateTestProductName();
-            var inventory = new Inventory() { Name = CreateTestProductName(), Quantity = 900, CreatedOn = DateTime.Now };
-
-            Assert.Catch<BadRequestException>(
-                delegate { InventoryController.Put(name, inventory); },
-                $"Name ({name}) does not match the name in the input json ({inventory.Name})"
-            );
         }
     }
 }

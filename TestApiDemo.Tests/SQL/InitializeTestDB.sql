@@ -3,11 +3,13 @@ go
 
 -------------------------------------------------------------------------------------
 -- Empty the tables to start new
--- (Reseed identity on dbo.Product rather than dropping and recreating the constraint)
+-- (delete Reseed identity on dbo.Product rather than dropping & recreating the constraint)
 -------------------------------------------------------------------------------------
+truncate table [dbo].[ApplicationLog]
 truncate table [dbo].[ProductInventory]
 delete from [dbo].[Product] 
 dbcc checkident ('Product', reseed, 1)  
+go
 
 -------------------------------------------------------------------------------------
 -- Populate the tables
@@ -19,7 +21,7 @@ declare @productTable table (
 )
 
 insert into @productTable (ProductName) values
-('Apples'), ('Pears'), ('Oranges'), ('Cherries'), ('Apricots')
+('Apples'), ('Pears'), ('Oranges'), ('Cherries'), ('Apricots'), ('Blueberries')
 
 declare @name varchar(200), 
         @id int = 0,
@@ -40,7 +42,8 @@ end
 -- Check the results of the data creation
 -------------------------------------------------------------------------------------
 select	p.[Name], isnull(i.[Quantity], 0) as [Quantity], p.[CreatedOn]
-from	dbo.Product p
-		left outer join dbo.ProductInventory i on p.ProductId = i.ProductId
+from	[dbo].[Product] p
+		left outer join [dbo].[ProductInventory] i on p.ProductId = i.ProductId
 
-        
+select  *
+from    [dbo].[ApplicationLog]

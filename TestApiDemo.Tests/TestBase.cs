@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using TestApiDemo.Controllers;
+using TestApiDemo.Models;
 using TestApiDemo.Services;
 
 namespace TestApiDemo.Tests
@@ -25,7 +26,7 @@ namespace TestApiDemo.Tests
         [OneTimeTearDown]
         public void Cleanup()
         {
-            DeleteProductForTest();
+            DeleteProductsForTest();
         }
 
         #endregion
@@ -37,7 +38,25 @@ namespace TestApiDemo.Tests
             return (Guid.NewGuid().ToString()).Replace("-", "");
         }
 
-        protected void DeleteProductForTest()
+        protected IEnumerable<Inventory> CreateInventoryList()
+        {
+            var inventoryList = new List<Inventory>();
+            var random = new Random();
+            var counter = 0;
+
+            do
+            {
+                var name = CreateTestProductName();
+                inventoryList.Add(new Inventory() { Name = name, Quantity = random.Next(1,500), CreatedOn = DateTime.Now });
+                AddedProducts.Add(name);
+                counter++;
+
+            } while (counter < int.Parse(Properties.Resources.PostRecordCount));
+
+            return inventoryList;
+        }
+
+        protected void DeleteProductsForTest()
         {
             if (!bool.Parse(Properties.Resources.PreserveTestResults))
             {

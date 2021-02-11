@@ -124,7 +124,7 @@ namespace TestApiDemo.Services
                 var response = new DemoResponse() { IsSuccessful = true };
 
                 var context = new InventoryContext();
-                context.Database.ExecuteSqlRaw($"Exec dbo.sp_DeleteProduct @name = '{name}';");
+                context.Database.ExecuteSqlRaw($"Exec {Properties.Resources.StoredProcedure_DeleteProduct} @name = '{name}';");
 
                 response.Message = $"Delete for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
@@ -140,22 +140,14 @@ namespace TestApiDemo.Services
 
         public DemoResponse Put(string name, Inventory inventory)
         {
-            if (!name.Equals(inventory.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                var message =
-                    $"Name ({name}) does not match the name in the input json ({inventory.Name})";
-
-                Log.Error($"Error on Put: => {message}");
-                throw new BadRequestException(message);
-            }
-
             try
             {
+                ValidatePayload(inventory, name);
                 var start = DateTime.Now;
                 var response = new DemoResponse() { IsSuccessful = true };
 
                 var context = new InventoryContext();
-                context.Database.ExecuteSqlRaw($"Exec dbo.sp_UpsertProduct @name = '{name}', @quantity = {inventory.Quantity}, @createdOn = '{inventory.CreatedOn}';");
+                context.Database.ExecuteSqlRaw($"Exec {Properties.Resources.StoredProcedure_UpsertProduct} @name = '{name}', @quantity = {inventory.Quantity}, @createdOn = '{inventory.CreatedOn}';");
 
                 response.Message = $"Put for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
@@ -180,8 +172,9 @@ namespace TestApiDemo.Services
                 var context = new InventoryContext();
                 foreach (var item in inventory)
                 {
+                    ValidatePayload(item);
                     context.Database.ExecuteSqlRaw(
-                        $"Exec dbo.sp_UpsertProduct @name = '{item.Name}', @quantity = {item.Quantity}, @createdOn = '{item.CreatedOn}';");
+                        $"Exec {Properties.Resources.StoredProcedure_UpsertProduct} @name = '{item.Name}', @quantity = {item.Quantity}, @createdOn = '{item.CreatedOn}';");
                     messageBuilder.Append($"Post for product ").Append(item.Name).AppendLine(" successfully completed.");
                 }
 
@@ -286,6 +279,17 @@ namespace TestApiDemo.Services
 
         #endregion
 
+        private static void ValidatePayload(Inventory inventory, string name = null)
+        {
+            if ((!string.IsNullOrEmpty(name)) && (!name.Equals(inventory.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"Name ({name}) does not match the name in the input json ({inventory.Name})");
+            }
 
+            if (inventory.Quantity < 0)
+            {
+                throw new BadRequestException($"Product ({inventory.Name}) must have a quantity greater than or equal to 0");
+            }
+        }
     }
 }

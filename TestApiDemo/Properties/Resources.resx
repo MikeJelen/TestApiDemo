@@ -120,4 +120,10 @@
   <data name="SqlConnection" xml:space="preserve">
     <value>Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;</value>
   </data>
+  <data name="StoredProcedure_DeleteProduct" xml:space="preserve">
+    <value>[dbo].[sp_DeleteProduct]</value>
+  </data>
+  <data name="StoredProcedure_UpsertProduct" xml:space="preserve">
+    <value>[dbo].[sp_UpsertProduct]</value>
+  </data>
 </root>

@@ -68,5 +68,23 @@ namespace TestApiDemo.Properties {
                 return ResourceManager.GetString("SqlConnection", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [dbo].[sp_DeleteProduct].
+        /// </summary>
+        internal static string StoredProcedure_DeleteProduct {
+            get {
+                return ResourceManager.GetString("StoredProcedure_DeleteProduct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [dbo].[sp_UpsertProduct].
+        /// </summary>
+        internal static string StoredProcedure_UpsertProduct {
+            get {
+                return ResourceManager.GetString("StoredProcedure_UpsertProduct", resourceCulture);
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@ begin try
 
 	if (@ProductId is null)
 		begin
-			select	@ErrorMessage = 'Product ' + @name + ' not found'
+			select	@ErrorMessage = 'Product ' + @name + ' not found for deletion'
 			raiserror (@ErrorMessage, 16, 1 );
 		end
 	
