@@ -10,11 +10,6 @@ namespace TestApiDemo.Tests
 {
     public abstract class TestBase<T>
     {
-        protected const bool PRESERVE_TEST_PRODUCTS = false;
-        protected const string URL = "http://localhost:8081/inventory";
-        protected const string CONN = "Server=(localdb)\\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;";
-        protected const int POST_RECORD_COUNT = 5;
-
         protected readonly InventoryController InventoryController = new InventoryController(new InventoryDataService());
         protected readonly List<string> AddedProducts = new List<string>();
 
@@ -42,7 +37,7 @@ namespace TestApiDemo.Tests
 
         protected void DeleteProductForTest()
         {
-            if (!PRESERVE_TEST_PRODUCTS)
+            if (!bool.Parse(Properties.Resources.PreserveTestResults))
             {
                 foreach (var productName in AddedProducts)
                 {
@@ -72,7 +67,7 @@ namespace TestApiDemo.Tests
         protected static DataSet ExecuteQuery(string query)
         {
             var dataSet = new DataSet();
-            using (var connection = new SqlConnection(CONN))
+            using (var connection = new SqlConnection(Properties.Resources.SqlConnection))
             {
                 using (var command = new SqlCommand(query, connection))
                 {

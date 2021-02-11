@@ -61,6 +61,15 @@ namespace TestApiDemo.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string ConcurrentThreads {
+            get {
+                return ResourceManager.GetString("ConcurrentThreads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to declare @i int = (select ProductId from dbo.Product where Name = &apos;&lt;@Name&gt;&apos;); 
         ///delete from dbo.ProductInventory where ProductId = @i; 
         ///delete from dbo.Product where ProductId = @i; .
@@ -164,6 +173,33 @@ namespace TestApiDemo.Tests.Properties {
         internal static string InsertProduct {
             get {
                 return ResourceManager.GetString("InsertProduct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5.
+        /// </summary>
+        internal static string PostRecordCount {
+            get {
+                return ResourceManager.GetString("PostRecordCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to true.
+        /// </summary>
+        internal static string PreserveTestResults {
+            get {
+                return ResourceManager.GetString("PreserveTestResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;.
+        /// </summary>
+        internal static string SqlConnection {
+            get {
+                return ResourceManager.GetString("SqlConnection", resourceCulture);
             }
         }
     }

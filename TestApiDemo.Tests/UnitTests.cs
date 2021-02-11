@@ -107,7 +107,7 @@ namespace TestApiDemo.Tests
                 AddedProducts.Add(name);
                 counter++;
 
-            } while (counter < POST_RECORD_COUNT);
+            } while (counter < int.Parse(Properties.Resources.PostRecordCount));
 
             _ = InventoryController.Post(inventoryList);
             foreach (var item in inventoryList)
@@ -138,8 +138,8 @@ namespace TestApiDemo.Tests
         [Property("Priority", 2)]
         public void PutUnmatchedNames()
         {
-            const string name = "Blueberries";
-            var inventory = new Inventory() { Name = "Blackberries", Quantity = 900, CreatedOn = DateTime.Now };
+            var name = CreateTestProductName();
+            var inventory = new Inventory() { Name = CreateTestProductName(), Quantity = 900, CreatedOn = DateTime.Now };
 
             Assert.Catch<BadRequestException>(
                 delegate { InventoryController.Put(name, inventory); },

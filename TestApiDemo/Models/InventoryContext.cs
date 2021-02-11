@@ -22,8 +22,7 @@ namespace TestApiDemo.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //TODO - Move connection string
-                optionsBuilder.UseSqlServer("Server=(localdb)\\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(Properties.Resources.SqlConnection);
             }
         }
 
