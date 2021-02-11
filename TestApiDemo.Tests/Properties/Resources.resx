@@ -126,10 +126,24 @@ delete from dbo.ProductInventory where ProductId = @i;
 delete from dbo.Product where ProductId = @i; </value>
   </data>
   <data name="Get" xml:space="preserve">
-    <value>select	  p.[Name] as 'Name', isnull(i.[Quantity], 0) as 'Quantity', replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') as 'CreatedOn' from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId for json path;</value>
+    <value>select p.[Name] as 'Name', isnull(i.[Quantity], 0) as 'Quantity', 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end as 'CreatedOn' 
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId 
+for json path;</value>
   </data>
   <data name="GetByName" xml:space="preserve">
-    <value>select	  p.[Name] as 'Name', isnull(i.[Quantity], 0) as 'Quantity', replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') as 'CreatedOn' from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[Name] = '&lt;@Name&gt;' for json path;</value>
+    <value>select p.[Name] as 'Name', isnull(i.[Quantity], 0) as 'Quantity', 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end as 'CreatedOn' 
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId 
+where p.[Name] = '&lt;@Name&gt;' for json path;</value>
   </data>
   <data name="GetFirstProduct" xml:space="preserve">
     <value>select top 1 p.[Name] from dbo.Product p;</value>
@@ -137,30 +151,55 @@ delete from dbo.Product where ProductId = @i; </value>
   <data name="GetHighestQuantity" xml:space="preserve">
     <value>declare @table table ([Name] varchar(200) primary key, [Quantity] int, [CreatedOn] varchar(50));
 insert into @table
-select p.[Name], isnull(i.[Quantity], 0), replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
+select p.[Name], isnull(i.[Quantity], 0), 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
 declare @max int = (select max(Quantity) from @table);
-select	* from	@table where Quantity = @max for json path;</value>
+select * from @table where Quantity = @max order by [CreatedOn] asc for json path;</value>
   </data>
   <data name="GetLastProduct" xml:space="preserve">
     <value>select top 1 p.[Name] from dbo.Product p inner join dbo.ProductInventory i on p.[ProductId] = i.[ProductId] order by p.[CreatedOn] desc;</value>
   </data>
   <data name="GetLowestQuantity" xml:space="preserve">
     <value>declare @table table ([Name] varchar(200) primary key, [Quantity] int, [CreatedOn] varchar(50));
-
 insert into @table
-select  p.[Name], isnull(i.[Quantity], 0), replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
+select p.[Name], isnull(i.[Quantity], 0), 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
 declare @min int = (select min(Quantity) from @table);
-select * from @table where Quantity = @min for json path;</value>
+select * from @table where Quantity = @min order by [CreatedOn] asc for json path;</value>
   </data>
   <data name="GetNewest" xml:space="preserve">
     <value>declare @max datetime2 = (select max([CreatedOn]) from [dbo].[Product]);
 
-select p.[Name] as 'Name', isnull(i.[Quantity], 0)	as 'Quantity', replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') as 'CreatedOn' from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[CreatedOn] = @max for json path;</value>
+select p.[Name] as 'Name', isnull(i.[Quantity], 0)	as 'Quantity', 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end as 'CreatedOn'  
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId 
+where p.[CreatedOn] = @max order by p.[CreatedOn] asc for json path;</value>
   </data>
   <data name="GetOldest" xml:space="preserve">
     <value>declare @min datetime2 = (select min([CreatedOn]) from [dbo].[Product]);
 
-select p.[Name] as 'Name', isnull(i.[Quantity], 0)	as 'Quantity', replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),'0',' ')),' ','0') as 'CreatedOn' from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[CreatedOn] = @min for json path;</value>
+select p.[Name] as 'Name', isnull(i.[Quantity], 0)	as 'Quantity', 
+convert(varchar(50), p.[CreatedOn], 23) + 'T' +  
+right('0' + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + ':' + 
+right('0' + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+case when datepart(ns, p.[CreatedOn]) &gt; 0 then '.' + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),'0',' ')),' ','0') else '' end as 'CreatedOn'  
+from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId 
+where p.[CreatedOn] = @min order by p.[CreatedOn] asc for json path;</value>
   </data>
   <data name="InsertProduct" xml:space="preserve">
     <value>insert into dbo.Product (Name) values ('&lt;@Name&gt;');
@@ -171,7 +210,7 @@ insert into dbo.ProductInventory (ProductId, Quantity) values (@i, 50);</value>
     <value>5</value>
   </data>
   <data name="PreserveTestResults" xml:space="preserve">
-    <value>true</value>
+    <value>false</value>
   </data>
   <data name="SqlConnection" xml:space="preserve">
     <value>Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;</value>

@@ -1,38 +1,13 @@
 use MikeDemo
 go
 
-/*
 -------------------------------------------------------------------------------------
--- Table definitions
+-- Empty the tables to start new
+-- (Reseed identity on dbo.Product rather than dropping and recreating the constraint)
 -------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Product] (
-    [ProductId] INT           IDENTITY (1, 1) NOT NULL,
-    [Name]      VARCHAR (200) NOT NULL,
-    [CreatedOn] DATETIME2 (7) DEFAULT (getutcdate()) NOT NULL,
-    PRIMARY KEY CLUSTERED ([ProductId] ASC)
-);
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UIX_Product_Name]
-    ON [dbo].[Product]([Name] ASC);
-GO
-
-CREATE TABLE [dbo].[ProductInventory] (
-    [ProductInventoryId] INT           IDENTITY (1, 1) NOT NULL,
-    [ProductId]          INT           NOT NULL,
-    [Quantity]           INT           DEFAULT ((0)) NOT NULL,
-    [CreatedOn]          DATETIME2 (7) DEFAULT (getutcdate()) NOT NULL,
-    [LastUpdateOn]       DATETIME2 (7) DEFAULT (getutcdate()) NOT NULL,
-    PRIMARY KEY CLUSTERED ([ProductInventoryId] ASC),
-    CONSTRAINT [FK_ProductInventory_ToProduct] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Product] ([ProductId])
-);
-GO
-*/
-
 truncate table [dbo].[ProductInventory]
 delete from [dbo].[Product] 
-dbcc checkident ('Product', reseed, 1)  --Do this rather than dropping and recreating the constraint
+dbcc checkident ('Product', reseed, 1)  
 
 -------------------------------------------------------------------------------------
 -- Populate the tables

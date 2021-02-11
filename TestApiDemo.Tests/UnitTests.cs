@@ -35,7 +35,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetAllProducts()
         {
-            var expected = (ExecuteQuery(Properties.Resources.Get).Tables[0].Rows[0][0]).ToString();
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.Get).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.Get().Result);
             Assert.AreEqual(expected, results);
         }
@@ -45,8 +45,8 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetProduct()
         {
-            var product = (ExecuteQuery(Properties.Resources.GetFirstProduct).Tables[0].Rows[0][0]).ToString();
-            var expected = (ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", product)).Tables[0].Rows[0][0]).ToString();
+            var product = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetFirstProduct).Tables[0]);
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", product)).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.Get(product).Result);
             Assert.AreEqual(expected?.TrimStart('[').TrimEnd(']'), results);
         }
@@ -56,7 +56,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetHighestQuantity()
         {
-            var expected = (ExecuteQuery(Properties.Resources.GetHighestQuantity).Tables[0].Rows[0][0]).ToString();
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetHighestQuantity).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.GetByQuantityLevel(QuantityFilter.Highest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -66,7 +66,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetLowestQuantity()
         {
-            var expected = (ExecuteQuery(Properties.Resources.GetLowestQuantity).Tables[0].Rows[0][0]).ToString();
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetLowestQuantity).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.GetByQuantityLevel(QuantityFilter.Lowest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -77,7 +77,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetNewest()
         {
-            var expected = (ExecuteQuery(Properties.Resources.GetNewest).Tables[0].Rows[0][0]).ToString();
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetNewest).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.GetByCreated(CreatedFilter.Newest).Result);
             Assert.AreEqual(expected, results);
         }
@@ -87,7 +87,7 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void GetOldest()
         {
-            var expected = (ExecuteQuery(Properties.Resources.GetOldest).Tables[0].Rows[0][0]).ToString();
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetOldest).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.GetByCreated(CreatedFilter.Oldest).Result);
             Assert.AreEqual(expected, results);
         }

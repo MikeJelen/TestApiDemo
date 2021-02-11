@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <None Update="SQL\InitializeTestDB.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

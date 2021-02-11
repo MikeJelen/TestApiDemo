@@ -81,7 +81,13 @@ namespace TestApiDemo.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to select	  p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0) as &apos;Quantity&apos;, replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) as &apos;CreatedOn&apos; from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId for json path;.
+        ///   Looks up a localized string similar to select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0) as &apos;Quantity&apos;, 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) else &apos;&apos; end as &apos;CreatedOn&apos; 
+        ///from d [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Get {
             get {
@@ -90,7 +96,13 @@ namespace TestApiDemo.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to select	  p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0) as &apos;Quantity&apos;, replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) as &apos;CreatedOn&apos; from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[Name] = &apos;&lt;@Name&gt;&apos; for json path;.
+        ///   Looks up a localized string similar to select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0) as &apos;Quantity&apos;, 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast(datepart(ns, p.[CreatedOn]) as varchar),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) else &apos;&apos; end as &apos;CreatedOn&apos; 
+        ///from d [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetByName {
             get {
@@ -110,9 +122,12 @@ namespace TestApiDemo.Tests.Properties {
         /// <summary>
         ///   Looks up a localized string similar to declare @table table ([Name] varchar(200) primary key, [Quantity] int, [CreatedOn] varchar(50));
         ///insert into @table
-        ///select p.[Name], isnull(i.[Quantity], 0), replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
-        ///declare @max int = (select max(Quantity) from @table);
-        ///select	* from	@table where Quantity = @max for json path;.
+        ///select p.[Name], isnull(i.[Quantity], 0), 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast( [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetHighestQuantity {
             get {
@@ -131,11 +146,13 @@ namespace TestApiDemo.Tests.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to declare @table table ([Name] varchar(200) primary key, [Quantity] int, [CreatedOn] varchar(50));
-        ///
         ///insert into @table
-        ///select  p.[Name], isnull(i.[Quantity], 0), replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId;
-        ///declare @min int = (select min(Quantity) from @table);
-        ///select * from @table where Quantity = @min for json path;.
+        ///select p.[Name], isnull(i.[Quantity], 0), 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast( [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetLowestQuantity {
             get {
@@ -146,7 +163,12 @@ namespace TestApiDemo.Tests.Properties {
         /// <summary>
         ///   Looks up a localized string similar to declare @max datetime2 = (select max([CreatedOn]) from [dbo].[Product]);
         ///
-        ///select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0)	as &apos;Quantity&apos;, replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) as &apos;CreatedOn&apos; from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[CreatedOn] = @max for json path;.
+        ///select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0)	as &apos;Quantity&apos;, 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast(datepart(ns, p.[Cr [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNewest {
             get {
@@ -157,7 +179,12 @@ namespace TestApiDemo.Tests.Properties {
         /// <summary>
         ///   Looks up a localized string similar to declare @min datetime2 = (select min([CreatedOn]) from [dbo].[Product]);
         ///
-        ///select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0)	as &apos;Quantity&apos;, replace(rtrim(replace(convert(varchar(50), p.[CreatedOn], 126),&apos;0&apos;,&apos; &apos;)),&apos; &apos;,&apos;0&apos;) as &apos;CreatedOn&apos; from dbo.Product p left outer join dbo.ProductInventory i on p.ProductId = i.ProductId where p.[CreatedOn] = @min for json path;.
+        ///select p.[Name] as &apos;Name&apos;, isnull(i.[Quantity], 0)	as &apos;Quantity&apos;, 
+        ///convert(varchar(50), p.[CreatedOn], 23) + &apos;T&apos; +  
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(hh, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(mi, p.[CreatedOn])), 2) + &apos;:&apos; + 
+        ///right(&apos;0&apos; + convert(varchar(2), datepart(ss, p.[CreatedOn])), 2) + 
+        ///case when datepart(ns, p.[CreatedOn]) &gt; 0 then &apos;.&apos; + replace(rtrim(replace(cast(datepart(ns, p.[Cr [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetOldest {
             get {
@@ -186,7 +213,7 @@ namespace TestApiDemo.Tests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to true.
+        ///   Looks up a localized string similar to false.
         /// </summary>
         internal static string PreserveTestResults {
             get {

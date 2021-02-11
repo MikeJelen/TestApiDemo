@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
 using TestApiDemo.Controllers;
 using TestApiDemo.Services;
 
@@ -79,6 +81,17 @@ namespace TestApiDemo.Tests
             }
 
             return dataSet;
+        }
+
+        protected static string GetJsonFromResultTable(DataTable table)
+        {
+            var builder = new StringBuilder();
+            foreach (var row in table.Rows.Cast<DataRow>())
+            {
+                builder.Append(row[0]);
+            }
+
+            return builder.ToString();
         }
 
         #endregion
