@@ -120,7 +120,7 @@ namespace TestApiDemo.Services
         {
             try
             {
-                var start = DateTime.Now;
+                var start = DateTime.UtcNow;
                 var response = new DemoResponse() { IsSuccessful = true };
 
                 var context = new InventoryContext();
@@ -143,7 +143,7 @@ namespace TestApiDemo.Services
             try
             {
                 ValidatePayload(inventory, name);
-                var start = DateTime.Now;
+                var start = DateTime.UtcNow;
                 var response = new DemoResponse() { IsSuccessful = true };
 
                 var context = new InventoryContext();
@@ -165,7 +165,7 @@ namespace TestApiDemo.Services
         {
             try
             {
-                var start = DateTime.Now;
+                var start = DateTime.UtcNow;
                 var response = new DemoResponse() { IsSuccessful = true };
                 var messageBuilder = new StringBuilder();
 
@@ -267,7 +267,7 @@ namespace TestApiDemo.Services
         {
             const string dateFormat = "HH:mm:ss.fffffffK";
 
-            var endTime = DateTime.Now;
+            var endTime = DateTime.UtcNow;
             var duration = endTime.Subtract(start);
             var builder = new StringBuilder();
             builder.Append(message).Append(" Execution started at ")
@@ -283,12 +283,20 @@ namespace TestApiDemo.Services
         {
             if ((!string.IsNullOrEmpty(name)) && (!name.Equals(inventory.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                throw new BadRequestException($"Name ({name}) does not match the name in the input json ({inventory.Name})");
+                throw new BadRequestException(
+                    $"Name {name} does not match the name in the input json ({inventory.Name})");
             }
 
             if (inventory.Quantity < 0)
             {
-                throw new BadRequestException($"Product ({inventory.Name}) must have a quantity greater than or equal to 0");
+                throw new BadRequestException(
+                    $"Product {inventory.Name} must have a quantity greater than or equal to 0");
+            }
+
+            if (inventory.CreatedOn > DateTime.UtcNow)
+            {
+                throw new BadRequestException(
+                    $"Product {inventory.Name} cannot have created on a date in the future");
             }
         }
     }

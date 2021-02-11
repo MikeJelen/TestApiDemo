@@ -47,7 +47,7 @@ namespace TestApiDemo.Tests
             do
             {
                 var name = CreateTestProductName();
-                inventoryList.Add(new Inventory() { Name = name, Quantity = random.Next(1,500), CreatedOn = DateTime.Now });
+                inventoryList.Add(new Inventory() { Name = name, Quantity = random.Next(1,500), CreatedOn = DateTime.UtcNow });
                 AddedProducts.Add(name);
                 counter++;
 

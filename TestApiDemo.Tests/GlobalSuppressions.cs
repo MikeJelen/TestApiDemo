@@ -5,4 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "<Pending>", Scope = "member", Target = "~M:TestApiDemo.Tests.TestBase`1.ExecuteQuery(System.String)~System.Data.DataSet")]
+[assembly: SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "All queries in resources and have been reviewed", Scope = "member", Target = "~M:TestApiDemo.Tests.TestBase`1.ExecuteQuery(System.String)~System.Data.DataSet")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "using test to catch any exception so generic is preferred", Scope = "member", Target = "~M:TestApiDemo.Tests.AsyncTests.Delete")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "using test to catch any exception so generic is preferred", Scope = "member", Target = "~M:TestApiDemo.Tests.AsyncTests.Post")]
