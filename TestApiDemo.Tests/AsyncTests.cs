@@ -1,5 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -76,7 +76,7 @@ namespace TestApiDemo.Tests
                 inventoryList.Add(i, inventories);
             }
 
-            
+
             var caughtExceptions = 0;
             var selectSqlString = await File.ReadAllTextAsync(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
 

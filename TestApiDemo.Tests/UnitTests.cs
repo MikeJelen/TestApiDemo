@@ -112,11 +112,11 @@ namespace TestApiDemo.Tests
             var counter = 0;
             var inventoryList = new List<Inventory>();
             var sqlQuery = File.ReadAllText(Path.Combine(CurrentDirectory, "SQL", "GetByName.sql"));
-            
+
             do
             {
                 var name = (Guid.NewGuid().ToString()).Replace("-", "");
-                inventoryList.Add(new Inventory() {Name = name, Quantity = 100, CreatedOn = DateTime.Now});
+                inventoryList.Add(new Inventory() { Name = name, Quantity = 100, CreatedOn = DateTime.Now });
                 AddedProducts.Add(name);
                 counter++;
 
@@ -154,7 +154,7 @@ namespace TestApiDemo.Tests
         public void PutUnmatchedNames()
         {
             const string name = "Blueberries";
-            var inventory = new Inventory() {Name = "Blackberries", Quantity = 900, CreatedOn = DateTime.Now};
+            var inventory = new Inventory() { Name = "Blackberries", Quantity = 900, CreatedOn = DateTime.Now };
 
             Assert.Catch<BadRequestException>(
                 delegate { InventoryController.Put(name, inventory); },
