@@ -15,6 +15,7 @@ namespace TestApiDemo.Tests
 {
     public abstract class TestBase<T>
     {
+        protected const string NAME_PARAMETER = "<@Name>";
         protected InventoryController InventoryController;
         protected readonly List<string> AddedProducts = new List<string>();
 
@@ -72,7 +73,7 @@ namespace TestApiDemo.Tests
             {
                 foreach (var productName in AddedProducts)
                 {
-                    _ = ExecuteQuery(Properties.Resources.DeleteProduct.Replace("<@Name>", productName));
+                    _ = ExecuteQuery(Properties.Resources.DeleteProduct.Replace(NAME_PARAMETER, productName));
                 }
             }
         }
@@ -81,9 +82,9 @@ namespace TestApiDemo.Tests
         {
             var newProduct = CreateTestProductName();
 
-            _ = ExecuteQuery(Properties.Resources.InsertProduct.Replace("<@Name>", newProduct));
+            _ = ExecuteQuery(Properties.Resources.InsertProduct.Replace(NAME_PARAMETER, newProduct));
 
-            var selectSqlString = Properties.Resources.GetByName.Replace("<@Name>", newProduct);
+            var selectSqlString = Properties.Resources.GetByName.Replace(NAME_PARAMETER, newProduct);
 
             var newProductVerifiedResult = ExecuteQuery(selectSqlString).Tables[0];
             if (newProductVerifiedResult.Rows.Count != 1)

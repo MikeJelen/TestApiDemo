@@ -34,7 +34,7 @@ namespace TestApiDemo.Tests
                     var asyncResult = await InventoryController.Delete(testProduct);
                     Assert.IsTrue(asyncResult.IsSuccessful);
 
-                    var results = ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", testProduct)).Tables[0];
+                    var results = ExecuteQuery(Properties.Resources.GetByName.Replace(NAME_PARAMETER, testProduct)).Tables[0];
                     Assert.AreEqual(0, results.Rows.Count);
                 }
                 catch
@@ -72,7 +72,7 @@ namespace TestApiDemo.Tests
 
                     foreach (var item in value)
                     {
-                        var results = ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", item.Name)).Tables[0];
+                        var results = ExecuteQuery(Properties.Resources.GetByName.Replace(NAME_PARAMETER, item.Name)).Tables[0];
                         Assert.AreEqual(1, results.Rows.Count);
                     }
                 }

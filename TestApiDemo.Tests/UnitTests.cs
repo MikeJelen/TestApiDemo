@@ -24,7 +24,7 @@ namespace TestApiDemo.Tests
             else
             {
                 _ = InventoryController.Delete(newProduct);
-                var selectSqlString = Properties.Resources.GetByName.Replace("<@Name>", newProduct);
+                var selectSqlString = Properties.Resources.GetByName.Replace(NAME_PARAMETER, newProduct);
                 var results = ExecuteQuery(selectSqlString).Tables[0];
                 Assert.AreEqual(0, results.Rows.Count);
             }
@@ -46,7 +46,7 @@ namespace TestApiDemo.Tests
         public void GetProduct()
         {
             var product = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetFirstProduct).Tables[0]);
-            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", product)).Tables[0]);
+            var expected = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetByName.Replace(NAME_PARAMETER, product)).Tables[0]);
             var results = JsonSerializer.Serialize(InventoryController.Get(product).Result);
             Assert.AreEqual(expected?.TrimStart('[').TrimEnd(']'), results);
         }
@@ -102,7 +102,7 @@ namespace TestApiDemo.Tests
             foreach (var item in inventoryList)
             {
                 var results = ExecuteQuery(
-                    Properties.Resources.GetByName.Replace("<@Name>", item.Name)).Tables[0];
+                    Properties.Resources.GetByName.Replace(NAME_PARAMETER, item.Name)).Tables[0];
                 Assert.AreEqual(1, results.Rows.Count);
             }
         }
@@ -123,7 +123,7 @@ namespace TestApiDemo.Tests
 
             _ = InventoryController.Put(name, inventory);
             var results = ExecuteQuery(
-                Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0];
+                Properties.Resources.GetByName.Replace(NAME_PARAMETER, name)).Tables[0];
             Assert.AreEqual(1, results.Rows.Count);
         }
 
@@ -162,7 +162,7 @@ namespace TestApiDemo.Tests
             }
 
             var inventory = JsonSerializer.Deserialize<Inventory>(GetJsonFromResultTable(ExecuteQuery(
-                Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0]).TrimStart('[').TrimEnd(']'));
+                Properties.Resources.GetByName.Replace(NAME_PARAMETER, name)).Tables[0]).TrimStart('[').TrimEnd(']'));
 
             //Check that the date is the original date
             Assert.AreEqual(createdOn.ToString("G"), inventory.CreatedOn.ToString("G"));
