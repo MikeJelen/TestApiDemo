@@ -20,34 +20,27 @@ begin try
 			set @createdOn = getutcdate()
 		end
 
-	select @ProductId = ProductId from [dbo].[Product] p where p.Name = @name
+	
 	
 	--begin transaction
 
-	if (@ProductId is null)
-		begin
-			
-			insert into [dbo].[Product] ([Name], [CreatedOn]) values (@name, @createdOn)
-			select @ProductId = scope_identity()
-			
-			insert into [dbo].[ProductInventory] ([ProductId], [Quantity], [CreatedOn], [LastUpdateOn])
-				values (@ProductId, @quantity, @createdOn, @createdOn)
+		merge [dbo].[Product] as target
+				using (select @name) as source ([Name])
+				on (target.[Name] = source.[Name])
+				when not matched then
+					insert ([Name], [CreatedOn])
+						values (@name, @createdOn);
 
-		end
+		select @ProductId = ProductId from [dbo].[Product] p where p.Name = @name
 
-	else
-		begin
-			
-			merge [dbo].[ProductInventory] as target
+		merge [dbo].[ProductInventory] as target
 				using (select @ProductId) as source ([ProductId])
 				on (target.[ProductId] = source.[ProductId])
 				when matched then 
 					update set [Quantity] = @quantity, [LastUpdateOn] = @createdOn
 				when not matched then
 					insert ([ProductId], [Quantity], [CreatedOn], [LastUpdateOn])
-						values (@ProductId, @quantity, @createdOn, @createdOn)
-				;
-		end
+						values (@ProductId, @quantity, @createdOn, @createdOn);
 
 	--commit transaction 
 

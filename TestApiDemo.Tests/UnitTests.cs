@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Models;
 
@@ -124,6 +126,52 @@ namespace TestApiDemo.Tests
             var results = ExecuteQuery(
                 Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0];
             Assert.AreEqual(1, results.Rows.Count);
+        }
+
+        [Test]
+        [Category("Functional")]
+        [Property("Priority", 1)]
+        public void PutSameProductDifferentCriteria()
+        {
+            var inventoryList = new List<Inventory>();
+            var name = CreateTestProductName();
+            var counter = 0;
+
+            var quantity = 100;
+            var postRecordCount = int.Parse(Properties.Resources.PostRecordCount);
+            var negative = postRecordCount * -1;
+            var createdOn = DateTime.UtcNow.AddDays(negative);
+
+            do
+            {
+                inventoryList.Add(new Inventory
+                {
+                    Name = name,
+                    Quantity = quantity,
+                    CreatedOn = createdOn.AddDays(counter)
+                });
+
+                counter++;
+                quantity += 1;
+
+
+            } while (counter < postRecordCount);
+
+            AddedProducts.Add(name);
+            foreach (var inventoryItem in inventoryList)
+            {
+                _ = InventoryController.Put(name, inventoryItem);
+
+            };
+
+            var json = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0]);
+            var inventory = JsonSerializer.Deserialize<Inventory>(json.TrimStart('[').TrimEnd(']'));
+
+            //Check that the date is the original date
+            Assert.AreEqual(createdOn.ToString("G"), inventory.CreatedOn.ToString("G"));
+
+            //Check that the quantity is the last quantity
+            Assert.AreEqual(quantity, inventory.Quantity);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace TestApiDemo.Tests
 
             Assert.Catch<BadRequestException>(
                 delegate { InventoryController.Put(name, inventory); },
-                $"Product {name} cannot have created on a date in the future"
+                $"Product {inventory.Name} cannot have created on a date in the future (date provided: {inventory.CreatedOn})"
             );
         }
 

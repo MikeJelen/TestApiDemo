@@ -14,3 +14,7 @@ CREATE TABLE [dbo].[ProductInventory] (
     CONSTRAINT [FK_ProductInventory_ToProduct] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Product] ([ProductId])
 );
 GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [UIX_ProductInventory_ProductId]
+    ON [dbo].[ProductInventory]([ProductId] ASC);
+GO

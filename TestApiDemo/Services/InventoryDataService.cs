@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
+using TestApiDemo.Helpers;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Services
@@ -305,7 +306,7 @@ namespace TestApiDemo.Services
             if (inventory.CreatedOn > DateTime.UtcNow)
             {
                 throw new BadRequestException(
-                    $"Product {inventory.Name} cannot have created on a date in the future");
+                    $"Product {inventory.Name} cannot have created on a date in the future (date provided: {inventory.CreatedOn})");
             }
         }
     }

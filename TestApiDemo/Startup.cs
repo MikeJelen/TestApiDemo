@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using TestApiDemo.Helpers;
 using TestApiDemo.Services;
 
 namespace TestApiDemo
@@ -25,6 +26,7 @@ namespace TestApiDemo
         {
             services.AddControllers();
             services.AddTransient<IDataService, InventoryDataService>();
+            services.AddScoped<IMessagingHelper, KafkaMessageHelper>();
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.AddSwaggerGen(c =>
