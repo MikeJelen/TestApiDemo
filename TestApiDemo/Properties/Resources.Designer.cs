@@ -61,6 +61,15 @@ namespace TestApiDemo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test-Group.
+        /// </summary>
+        internal static string MessageGroupId {
+            get {
+                return ResourceManager.GetString("MessageGroupId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to localhost:9092.
         /// </summary>
         internal static string MessageServerUri {

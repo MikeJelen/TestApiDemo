@@ -6,7 +6,7 @@ namespace TestApiDemo.Helpers
 {
     public class KafkaMessageHelper : IMessagingHelper
     {
-        public string Consume(string serverUri, string topic)
+        public string Consume(string serverUri, string topic, string groupId)
         {
             throw new NotImplementedException();
         }
