@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
 using TestApiDemo.Helpers;
@@ -14,6 +16,13 @@ namespace TestApiDemo.Services
     public class InventoryDataService : IDataService
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        private static IMessagingHelper _messagingHelper;
+
+        public InventoryDataService(IServiceCollection serviceCollection)
+        {
+            var services = serviceCollection.BuildServiceProvider();
+            _messagingHelper = services.GetRequiredService<IMessagingHelper>();
+        }
 
         public IEnumerable<Inventory> Get()
         {
@@ -41,7 +50,6 @@ namespace TestApiDemo.Services
                 Log.Error($"Error on Get (all): => {e.Message}");
                 throw;
             }
-
         }
 
         public Inventory GetByName(string name)
@@ -132,6 +140,7 @@ namespace TestApiDemo.Services
 
                 response.Message = $"Delete for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
+                WriteQueuedMessage("Delete", name);
 
                 return response;
             }
@@ -158,6 +167,7 @@ namespace TestApiDemo.Services
 
                 response.Message = $"Put for product {name} successfully completed.";
                 WriteProgressLogMessage(start, response.Message);
+                WriteQueuedMessage("Put", new List<Inventory> { inventory });
 
                 return response;
             }
@@ -172,15 +182,16 @@ namespace TestApiDemo.Services
         {
             try
             {
+                var inventories = inventory as Inventory[] ?? inventory.ToArray();
                 var start = DateTime.UtcNow;
+                var messageBuilder = new StringBuilder();
+                var context = new InventoryContext();
                 var response = new DemoResponse
                 {
                     IsSuccessful = true
                 };
-                var messageBuilder = new StringBuilder();
-
-                var context = new InventoryContext();
-                foreach (var item in inventory)
+                
+                foreach (var item in inventories)
                 {
                     ValidatePayload(item);
                     context.Database.ExecuteSqlRaw(
@@ -190,6 +201,7 @@ namespace TestApiDemo.Services
 
                 response.Message = messageBuilder.ToString();
                 WriteProgressLogMessage(start, response.Message);
+                WriteQueuedMessage("Post", inventories );
 
                 return response;
             }
@@ -272,7 +284,7 @@ namespace TestApiDemo.Services
 
             return results;
         }
-
+        
         private static void WriteProgressLogMessage(DateTime start, string message)
         {
             const string dateFormat = "HH:mm:ss.fffffffK";
@@ -287,7 +299,27 @@ namespace TestApiDemo.Services
             Log.Info(builder.ToString());
         }
 
-        #endregion
+        private static void WriteQueuedMessage(string action, string name, int quantity = 0, DateTime? createdOn = null)
+        {
+            WriteQueuedMessage(action, new List<Inventory> 
+            {
+                new Inventory()
+                {
+                    Name = name,
+                    Quantity = quantity,
+                    CreatedOn = createdOn ?? DateTime.UtcNow
+                }
+            });
+        }
+
+        private static void WriteQueuedMessage(string action, IEnumerable<Inventory> inventories)
+        {
+            _messagingHelper.Produce(
+                Properties.Resources.MessageServerUri, 
+                Properties.Resources.MessageTopic,
+                JsonSerializer.Serialize(new Message { Action = action, Inventories = inventories })
+            );
+        }
 
         private static void ValidatePayload(Inventory inventory, string name = null)
         {
@@ -309,5 +341,7 @@ namespace TestApiDemo.Services
                     $"Product {inventory.Name} cannot have created on a date in the future (date provided: {inventory.CreatedOn})");
             }
         }
+
+        #endregion
     }
 }

@@ -61,6 +61,24 @@ namespace TestApiDemo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to localhost:9092.
+        /// </summary>
+        internal static string MessageServerUri {
+            get {
+                return ResourceManager.GetString("MessageServerUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory.
+        /// </summary>
+        internal static string MessageTopic {
+            get {
+                return ResourceManager.GetString("MessageTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;.
         /// </summary>
         internal static string SqlConnection {

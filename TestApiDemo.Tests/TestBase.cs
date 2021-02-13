@@ -5,7 +5,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using TestApiDemo.Controllers;
+using TestApiDemo.Helpers;
 using TestApiDemo.Models;
 using TestApiDemo.Services;
 
@@ -13,7 +15,7 @@ namespace TestApiDemo.Tests
 {
     public abstract class TestBase<T>
     {
-        protected readonly InventoryController InventoryController = new InventoryController(new InventoryDataService());
+        protected InventoryController InventoryController;
         protected readonly List<string> AddedProducts = new List<string>();
 
         #region Setup and Breakdown
@@ -21,6 +23,9 @@ namespace TestApiDemo.Tests
         [OneTimeSetUp]
         public void Initialize()
         {
+            IServiceCollection services = new ServiceCollection();
+            services.AddScoped<IMessagingHelper, KafkaMessageHelper>();
+            InventoryController = new InventoryController(new InventoryDataService(services));
         }
 
         [OneTimeTearDown]

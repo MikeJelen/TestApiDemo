@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MessageServerUri" xml:space="preserve">
+    <value>localhost:9092</value>
+  </data>
+  <data name="MessageTopic" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
   <data name="SqlConnection" xml:space="preserve">
     <value>Server=(localdb)\ProjectsV13;Database=MikeDemo;Trusted_Connection=True;</value>
   </data>

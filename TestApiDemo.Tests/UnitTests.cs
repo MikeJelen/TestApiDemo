@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Models;
 
@@ -133,17 +132,19 @@ namespace TestApiDemo.Tests
         [Property("Priority", 1)]
         public void PutSameProductDifferentCriteria()
         {
+            var counter = 0;
+            var quantity = 100;
             var inventoryList = new List<Inventory>();
             var name = CreateTestProductName();
-            var counter = 0;
 
-            var quantity = 100;
             var postRecordCount = int.Parse(Properties.Resources.PostRecordCount);
             var negative = postRecordCount * -1;
             var createdOn = DateTime.UtcNow.AddDays(negative);
+            AddedProducts.Add(name);
 
             do
             {
+                quantity += counter;
                 inventoryList.Add(new Inventory
                 {
                     Name = name,
@@ -152,20 +153,16 @@ namespace TestApiDemo.Tests
                 });
 
                 counter++;
-                quantity += 1;
-
 
             } while (counter < postRecordCount);
 
-            AddedProducts.Add(name);
             foreach (var inventoryItem in inventoryList)
             {
                 _ = InventoryController.Put(name, inventoryItem);
+            }
 
-            };
-
-            var json = GetJsonFromResultTable(ExecuteQuery(Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0]);
-            var inventory = JsonSerializer.Deserialize<Inventory>(json.TrimStart('[').TrimEnd(']'));
+            var inventory = JsonSerializer.Deserialize<Inventory>(GetJsonFromResultTable(ExecuteQuery(
+                Properties.Resources.GetByName.Replace("<@Name>", name)).Tables[0]).TrimStart('[').TrimEnd(']'));
 
             //Check that the date is the original date
             Assert.AreEqual(createdOn.ToString("G"), inventory.CreatedOn.ToString("G"));
