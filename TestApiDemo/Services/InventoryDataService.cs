@@ -22,6 +22,7 @@ namespace TestApiDemo.Services
         {
             var services = serviceCollection.BuildServiceProvider();
             _messagingHelper = services.GetRequiredService<IMessaging>();
+            Log.Info("==> IDataService: InventoryDataService");
         }
 
         public IEnumerable<Inventory> Get()
