@@ -7,7 +7,7 @@ using TestApiDemo.Models;
 
 namespace TestApiDemo.Tests
 {
-    public class MessageTests : TestBase<UnitTests>
+    public class MessageTests : TestBase<MessageTests>
     {
         [Test]
         [Category("Functional")]

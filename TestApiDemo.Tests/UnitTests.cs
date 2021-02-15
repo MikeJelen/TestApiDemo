@@ -115,8 +115,8 @@ namespace TestApiDemo.Tests
             var name = CreateTestProductName();
             var inventory = new Inventory
             {
-                Name = name, 
-                Quantity = 900, 
+                Name = name,
+                Quantity = 900,
                 CreatedOn = DateTime.UtcNow
             };
             AddedProducts.Add(name);

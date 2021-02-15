@@ -29,10 +29,10 @@ namespace TestApiDemo
 
             //Transient objects are always different; a new instance is provided to every controller and every service.
             services.AddTransient<IDataService, InventoryDataService>();
-            
+
             //Scoped objects are the same within a request, but different across different requests.
             //services.AddScoped<IMessagingHelper, KafkaMessageHelper>();
-            
+
             //Singleton objects are the same for every object and every request.
             services.AddSingleton<IMessaging, KafkaMessaging>();
 

@@ -28,8 +28,8 @@ namespace TestApiDemo.Tests
             var name = CreateTestProductName();
             var inventory = new Inventory
             {
-                Name = CreateTestProductName(), 
-                Quantity = 45, 
+                Name = CreateTestProductName(),
+                Quantity = 45,
                 CreatedOn = DateTime.UtcNow.AddYears(1)
             };
 
@@ -47,8 +47,8 @@ namespace TestApiDemo.Tests
             var name = CreateTestProductName();
             var inventory = new Inventory
             {
-                Name = CreateTestProductName(), 
-                Quantity = 900, 
+                Name = CreateTestProductName(),
+                Quantity = 900,
                 CreatedOn = DateTime.UtcNow
             };
 
@@ -68,8 +68,8 @@ namespace TestApiDemo.Tests
             {
                 new Inventory
                 {
-                    Name = name, 
-                    Quantity = -1, 
+                    Name = name,
+                    Quantity = -1,
                     CreatedOn = DateTime.UtcNow
                 }
             };

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Threading.Tasks;
 using TestKafka;
 
@@ -6,6 +7,11 @@ namespace TestApiDemo.Messaging
 {
     public class KafkaMessaging : IMessaging
     {
+        public KafkaMessaging()
+        {
+            LogManager.GetCurrentClassLogger().Info("==> IMessaging: KafkaMessaging");
+        }
+
         public string Consume(string serverUri, string topic, string groupId)
         {
             throw new NotImplementedException();

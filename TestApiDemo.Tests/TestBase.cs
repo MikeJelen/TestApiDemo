@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 using TestApiDemo.Controllers;
 using TestApiDemo.Messaging;
 using TestApiDemo.Models;
@@ -19,6 +19,7 @@ namespace TestApiDemo.Tests
         protected const string NAME_PARAMETER = "<@Name>";
         protected InventoryController InventoryController;
         protected readonly List<string> AddedProducts = new List<string>();
+        protected readonly bool UseMockMessageClass = !(typeof(T).Name.Equals("MessageTests", StringComparison.OrdinalIgnoreCase));
 
         #region Setup and Breakdown
 
@@ -26,16 +27,29 @@ namespace TestApiDemo.Tests
         public void Initialize()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddScoped<IMessaging, KafkaMessaging>();
+
+            if (UseMockMessageClass)
+            {
+                services.AddScoped<IMessaging, MockMessaging>();
+            }
+            else
+            {
+                services.AddScoped<IMessaging, KafkaMessaging>();
+                CleanMessageQueue();
+            }
+
             InventoryController = new InventoryController(new InventoryDataService(services));
-            CleanMessageQueue();
+
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
             DeleteProductsForTest();
-            CleanMessageQueue();
+            if (!UseMockMessageClass)
+            {
+                CleanMessageQueue();
+            }
         }
 
         #endregion
@@ -52,7 +66,7 @@ namespace TestApiDemo.Tests
                 {
                     ConsumeMessage();
                 }
-                catch 
+                catch
                 {
                     containsMessages = false;
                 }
@@ -63,7 +77,7 @@ namespace TestApiDemo.Tests
         protected static string ConsumeMessage()
         {
             return MessageHandler.ConsumeMessage(
-                Properties.Resources.MessageServerUri, 
+                Properties.Resources.MessageServerUri,
                 Properties.Resources.MessageTopic, Properties.Resources.MessageGroupId);
         }
 
@@ -83,8 +97,8 @@ namespace TestApiDemo.Tests
                 var name = CreateTestProductName();
                 inventoryList.Add(new Inventory
                 {
-                    Name = name, 
-                    Quantity = random.Next(1,500), 
+                    Name = name,
+                    Quantity = random.Next(1, 500),
                     CreatedOn = DateTime.UtcNow
                 });
                 AddedProducts.Add(name);

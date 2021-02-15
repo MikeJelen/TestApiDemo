@@ -190,7 +190,7 @@ namespace TestApiDemo.Services
                 {
                     IsSuccessful = true
                 };
-                
+
                 foreach (var item in inventories)
                 {
                     ValidatePayload(item);
@@ -201,7 +201,7 @@ namespace TestApiDemo.Services
 
                 response.Message = messageBuilder.ToString();
                 WriteProgressLogMessage(start, response.Message);
-                WriteQueuedMessage("Post", inventories );
+                WriteQueuedMessage("Post", inventories);
 
                 return response;
             }
@@ -284,7 +284,7 @@ namespace TestApiDemo.Services
 
             return results;
         }
-        
+
         private static void WriteProgressLogMessage(DateTime start, string message)
         {
             const string dateFormat = "HH:mm:ss.fffffffK";
@@ -301,7 +301,7 @@ namespace TestApiDemo.Services
 
         private static void WriteQueuedMessage(string action, string name, int quantity = 0, DateTime? createdOn = null)
         {
-            WriteQueuedMessage(action, new List<Inventory> 
+            WriteQueuedMessage(action, new List<Inventory>
             {
                 new Inventory()
                 {
@@ -315,7 +315,7 @@ namespace TestApiDemo.Services
         private static void WriteQueuedMessage(string action, IEnumerable<Inventory> inventories)
         {
             _messagingHelper.Produce(
-                Properties.Resources.MessageServerUri, 
+                Properties.Resources.MessageServerUri,
                 Properties.Resources.MessageTopic,
                 JsonSerializer.Serialize(new Message { Action = action, Inventories = inventories })
             );
