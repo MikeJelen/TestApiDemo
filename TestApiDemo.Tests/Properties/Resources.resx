@@ -206,6 +206,15 @@ where p.[CreatedOn] = @min order by p.[CreatedOn] asc for json path;</value>
 declare @i int = scope_identity();
 insert into dbo.ProductInventory (ProductId, Quantity) values (@i, 50);</value>
   </data>
+  <data name="MessageGroupId" xml:space="preserve">
+    <value>Test-Group</value>
+  </data>
+  <data name="MessageServerUri" xml:space="preserve">
+    <value>localhost:9092</value>
+  </data>
+  <data name="MessageTopic" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
   <data name="PostRecordCount" xml:space="preserve">
     <value>5</value>
   </data>

@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using TestApiDemo.Controllers;
-using TestApiDemo.Helpers;
+using TestApiDemo.Messaging;
 using TestApiDemo.Models;
 using TestApiDemo.Services;
+using TestKafka;
 
 namespace TestApiDemo.Tests
 {
@@ -25,19 +26,46 @@ namespace TestApiDemo.Tests
         public void Initialize()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddScoped<IMessagingHelper, KafkaMessageHelper>();
+            services.AddScoped<IMessaging, KafkaMessaging>();
             InventoryController = new InventoryController(new InventoryDataService(services));
+            CleanMessageQueue();
         }
 
         [OneTimeTearDown]
         public void Cleanup()
         {
             DeleteProductsForTest();
+            CleanMessageQueue();
         }
 
         #endregion
 
         #region Protected Methods
+
+        protected static void CleanMessageQueue()
+        {
+            var containsMessages = true;
+
+            do
+            {
+                try
+                {
+                    ConsumeMessage();
+                }
+                catch 
+                {
+                    containsMessages = false;
+                }
+
+            } while (containsMessages);
+        }
+
+        protected static string ConsumeMessage()
+        {
+            return MessageHandler.ConsumeMessage(
+                Properties.Resources.MessageServerUri, 
+                Properties.Resources.MessageTopic, Properties.Resources.MessageGroupId);
+        }
 
         protected static string CreateTestProductName()
         {

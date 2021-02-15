@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using TestApiDemo.Helpers;
+using TestApiDemo.Messaging;
 using TestApiDemo.Services;
 
 namespace TestApiDemo
@@ -34,7 +34,7 @@ namespace TestApiDemo
             //services.AddScoped<IMessagingHelper, KafkaMessageHelper>();
             
             //Singleton objects are the same for every object and every request.
-            services.AddSingleton<IMessagingHelper, KafkaMessageHelper>();
+            services.AddSingleton<IMessaging, KafkaMessaging>();
 
             services.AddSwaggerGen(c =>
             {

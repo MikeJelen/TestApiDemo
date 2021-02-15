@@ -204,6 +204,33 @@ namespace TestApiDemo.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test-Group.
+        /// </summary>
+        internal static string MessageGroupId {
+            get {
+                return ResourceManager.GetString("MessageGroupId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to localhost:9092.
+        /// </summary>
+        internal static string MessageServerUri {
+            get {
+                return ResourceManager.GetString("MessageServerUri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory.
+        /// </summary>
+        internal static string MessageTopic {
+            get {
+                return ResourceManager.GetString("MessageTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 5.
         /// </summary>
         internal static string PostRecordCount {

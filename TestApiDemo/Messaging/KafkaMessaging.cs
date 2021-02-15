@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using TestKafka;
 
-namespace TestApiDemo.Helpers
+namespace TestApiDemo.Messaging
 {
-    public class KafkaMessageHelper : IMessagingHelper
+    public class KafkaMessaging : IMessaging
     {
         public string Consume(string serverUri, string topic, string groupId)
         {

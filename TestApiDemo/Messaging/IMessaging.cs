@@ -1,6 +1,6 @@
-﻿namespace TestApiDemo.Helpers
+﻿namespace TestApiDemo.Messaging
 {
-    public interface IMessagingHelper
+    public interface IMessaging
     {
         void Produce(string serverUri, string topic, string message);
         string Consume(string serverUri, string topic, string groupId);

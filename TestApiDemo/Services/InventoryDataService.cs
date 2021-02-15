@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using TestApiDemo.Enumerations;
 using TestApiDemo.Exceptions;
-using TestApiDemo.Helpers;
+using TestApiDemo.Messaging;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Services
@@ -16,12 +16,12 @@ namespace TestApiDemo.Services
     public class InventoryDataService : IDataService
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private static IMessagingHelper _messagingHelper;
+        private static IMessaging _messagingHelper;
 
         public InventoryDataService(IServiceCollection serviceCollection)
         {
             var services = serviceCollection.BuildServiceProvider();
-            _messagingHelper = services.GetRequiredService<IMessagingHelper>();
+            _messagingHelper = services.GetRequiredService<IMessaging>();
         }
 
         public IEnumerable<Inventory> Get()
