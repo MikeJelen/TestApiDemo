@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
 
 namespace TestApiDemo.Models
 {
+    [ExcludeFromCodeCoverage]
     public partial class Product
     {
         public Product()

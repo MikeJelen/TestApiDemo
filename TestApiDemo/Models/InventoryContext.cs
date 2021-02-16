@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
 namespace TestApiDemo.Models
 {
+    [ExcludeFromCodeCoverage]
     public partial class InventoryContext : DbContext
     {
         public InventoryContext()

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
 
 namespace TestApiDemo.Models
 {
+    [ExcludeFromCodeCoverage]
     public partial class ProductInventory
     {
         public int ProductInventoryId { get; set; }

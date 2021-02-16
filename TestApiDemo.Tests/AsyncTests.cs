@@ -1,10 +1,12 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Tests
 {
+    [ExcludeFromCodeCoverage]
     public class AsyncTests : TestBase<AsyncTests>
     {
         [Test]

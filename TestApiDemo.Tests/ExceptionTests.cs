@@ -1,11 +1,13 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using TestApiDemo.Exceptions;
 using TestApiDemo.Models;
 
 namespace TestApiDemo.Tests
 {
+    [ExcludeFromCodeCoverage]
     public class ExceptionTests : TestBase<ExceptionTests>
     {
         [Test]
