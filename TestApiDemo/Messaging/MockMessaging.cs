@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if DEBUG
+using TestApiDemo.Exceptions;
+#endif
 
 namespace TestApiDemo.Messaging
 {
@@ -11,7 +14,11 @@ namespace TestApiDemo.Messaging
 
         public MockMessaging()
         {
+#if DEBUG
             LogManager.GetCurrentClassLogger().Info("==> IMessaging: MockMessaging");
+#else
+            throw new InvalidServiceException("MockMessaging is only available in DEBUG");
+#endif
         }
 
         public string Consume(string serverUri, string topic, string groupId)
