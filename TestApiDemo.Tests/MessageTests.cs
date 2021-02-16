@@ -4,13 +4,38 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using TestApiDemo.Controllers;
+using TestApiDemo.Messaging;
 using TestApiDemo.Models;
+using TestApiDemo.Services;
 
 namespace TestApiDemo.Tests
 {
     [ExcludeFromCodeCoverage]
     public class MessageTests : TestBase<MessageTests>
     {
+        #region Override Virtual Methods
+        protected override void Cleanup()
+        {
+            CleanMessageQueue();
+            base.Cleanup();
+        }
+
+        protected override void Initialization()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddScoped<IMessaging, KafkaMessaging>();
+
+            var provider = services.BuildServiceProvider();
+            InventoryController = new InventoryController(
+                new InventoryDataService(provider.GetRequiredService<IMessaging>()));
+
+            CleanMessageQueue();
+        }
+
+        #endregion
+
         [Test]
         [Category("Functional")]
         [Property("Priority", 3)]

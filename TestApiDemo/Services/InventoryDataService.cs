@@ -18,10 +18,9 @@ namespace TestApiDemo.Services
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
         private static IMessaging _messagingHelper;
 
-        public InventoryDataService(IServiceCollection serviceCollection)
+        public InventoryDataService(IMessaging messageHelper)
         {
-            var services = serviceCollection.BuildServiceProvider();
-            _messagingHelper = services.GetRequiredService<IMessaging>();
+            _messagingHelper = messageHelper;
             Log.Info("==> IDataService: InventoryDataService");
         }
 

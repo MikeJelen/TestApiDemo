@@ -21,37 +21,38 @@ namespace TestApiDemo.Tests
         protected const string NAME_PARAMETER = "<@Name>";
         protected InventoryController InventoryController;
         protected readonly List<string> AddedProducts = new List<string>();
-        protected readonly bool UseMockMessageClass = !(typeof(T).Name.Equals("MessageTests", StringComparison.OrdinalIgnoreCase));
-
+        
         #region Setup and Breakdown
 
         [OneTimeSetUp]
-        public void Initialize()
+        public void SetUp()
         {
-            IServiceCollection services = new ServiceCollection();
-
-            if (UseMockMessageClass)
-            {
-                services.AddScoped<IMessaging, MockMessaging>();
-            }
-            else
-            {
-                services.AddScoped<IMessaging, KafkaMessaging>();
-                CleanMessageQueue();
-            }
-
-            InventoryController = new InventoryController(new InventoryDataService(services));
-
+            Initialization();
         }
 
         [OneTimeTearDown]
-        public void Cleanup()
+        public void TearDown()
+        {
+            Cleanup();
+        }
+
+        #endregion
+
+        #region Virtual Methods
+
+        protected virtual void Cleanup()
         {
             DeleteProductsForTest();
-            if (!UseMockMessageClass)
-            {
-                CleanMessageQueue();
-            }
+        }
+
+        protected virtual void Initialization()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddScoped<IMessaging, MockMessaging>();
+
+            var provider = services.BuildServiceProvider();
+            InventoryController = new InventoryController(
+                new InventoryDataService(provider.GetRequiredService<IMessaging>()));
         }
 
         #endregion
